@@ -23,7 +23,6 @@ BAD_RESOURCE_URL="/mod_pagespeed/W.bad.pagespeed.cf.hash.css"
 
 def fin():
   os.system("killall -s QUIT nginx");
-  os.system("killall -9 nginx")
 
 @pytest.fixture(scope="session")
 #@pytest.fixture()
@@ -37,6 +36,7 @@ def systemTestFixture(request):
   systemTestFixture.xxx = 1
 
   print ("Start server")
+  os.system("killall -9 nginx")
   ls_output=subprocess.Popen([NGX_BINARY, "-c", CONFIGURATION],
     stdout=subprocess.PIPE)
   request.addfinalizer(fin)
