@@ -14,7 +14,6 @@ def test_in_place_resource_optimization(systemTestFixture):
   # (Since the system_test is run multiple times without clearing the cache
   # it may be in cache on some of those runs, but we know that it was put in
   # the cache by previous runs of this specific test.)
-  print "foo"
   url = "%s/ipro/test_image_dont_reuse.png" % test_fixtures.TEST_ROOT
 
   # Size between original image size and rewritten image size (in bytes).

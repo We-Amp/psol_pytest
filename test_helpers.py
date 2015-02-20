@@ -6,6 +6,8 @@ import sys
 def get(host, port, url, requestHeaders = {}):
   http = httplib.HTTPConnection(host, port, timeout=30)
   http.connect()
+  # TODO(oschaaf): we might not always want to do this, check the system test helpers.
+  requestHeaders["User-Agent"] = "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.0 (KHTML, like Gecko) Chrome/6.0.408.1 Safari/534.0"
   http.request("GET", url, headers=requestHeaders)
   response = http.getresponse()
   data = response.read()
@@ -44,4 +46,14 @@ def wait_untill_nginx_accepts():
       # TODO(oschaaf): raise something more specific
       raise Exception("wait_untill_nginx_accepts timed out")
 
-
+# Helper to set up most filter tests.  Alternate between using:
+#  1) query-params vs request-headers
+#  2) ModPagespeed... vs PageSpeed...
+# to enable the filter so we know all combinations work.
+def filter_test(filter_name, filter_description, filter_spec_method):
+  # TODO(oschaaf): mentions other args the PageSpeedFilters=
+  url = "%s/%s.html?PageSpeedFilters=%s" % (test_fixtures.EXAMPLE_ROOT, filter_name, filter_name)
+  resp, body = get_primary(url)
+  print resp.getheaders()
+  print body
+  return resp, body
