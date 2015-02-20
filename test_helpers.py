@@ -4,6 +4,7 @@ import time
 import sys
 
 def get(host, port, url, requestHeaders = {}):
+  print "GET %s:%s:%s" % (host, port, url)
   http = httplib.HTTPConnection(host, port, timeout=30)
   http.connect()
   # TODO(oschaaf): we might not always want to do this, check the system test helpers.
@@ -18,7 +19,7 @@ def get_primary(url, requestHeaders={}):
   return get(test_fixtures.PRIMARY_HOST, test_fixtures.PRIMARY_PORT, url, requestHeaders)
 
 def get_until(host, port, url, requestHeaders, predicate):
-  timeout_seconds = time.time() + 30
+  timeout_seconds = time.time() + 15
   while True:
     response, data = get(host, port, url)
     if predicate(response, data):
@@ -28,6 +29,7 @@ def get_until(host, port, url, requestHeaders, predicate):
 
 def get_until_primary(url, requestHeaders, predicate):
   return get_until(test_fixtures.PRIMARY_HOST, test_fixtures.PRIMARY_PORT, url, requestHeaders, predicate)
+
 
 # TODO(oschaaf): generic enough for all servers?
 def wait_untill_nginx_accepts():
@@ -54,6 +56,4 @@ def filter_test(filter_name, filter_description, filter_spec_method):
   # TODO(oschaaf): mentions other args the PageSpeedFilters=
   url = "%s/%s.html?PageSpeedFilters=%s" % (test_fixtures.EXAMPLE_ROOT, filter_name, filter_name)
   resp, body = get_primary(url)
-  print resp.getheaders()
-  print body
   return resp, body

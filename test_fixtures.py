@@ -17,13 +17,12 @@ EXAMPLE_ROOT="/mod_pagespeed_example"
 REWRITTEN_ROOT="/mod_pagespeed_example"
 TEST_ROOT="/mod_pagespeed_test"
 SINGLE_SERVER_INSTANCE=False
+BAD_RESOURCE_URL="/mod_pagespeed/W.bad.pagespeed.cf.hash.css"
 
 ############################### setup/teardown ################################
 
 def fin():
-  print ("teardown server")
   os.system("killall -s QUIT nginx");
-  print ("Kill server")
   os.system("killall -9 nginx")
 
 @pytest.fixture(scope="session")
