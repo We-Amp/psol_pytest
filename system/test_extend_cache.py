@@ -40,3 +40,26 @@ def test_extend_cache_pdfs_pdf_cache_extension(systemTestFixture):
   assert len(re.findall("embed src=\".*pagespeed.*\.pdf", body)) > 0
   assert len(re.findall("<a href=\"example.notpdf\">", body)) > 0
   assert len(re.findall("<a href=\".*pagespeed.*\\.pdf\">example.pdf\\?a=b", body)) > 0
+
+def test_cache_extended_pdfs_load_and_have_the_right_mime_type(systemTestFixture):
+  url="%s/extend_cache_pdfs.html?PageSpeedFilters=extend_cache_pdfs" % test_fixtures.EXAMPLE_ROOT
+  helpers.get_until_primary(url, {},
+    lambda response, body: body.count(".pagespeed.") == 3)
+  resp, body = helpers.get_primary(url)
+  results = re.findall(r'http://[^\"]*pagespeed.[^\"]*\.pdf', body)
+  ce_url_prepend = ""
+  if len(results) == 0:
+    # If PreserveUrlRelativity is on, we need to find the relative URL and
+    # absolutify it ourselves.
+    results = re.findall(r'[^\"]*pagespeed.[^\"]*\.pdf', body)
+    ce_url_prepend = test_fixtures.EXAMPLE_ROOT
+
+  assert len(results) > 0
+
+  ce_url = "%s/%s" % (ce_url_prepend, results[1])
+  print "Extracted cache-extended url: %s" % ce_url
+
+  resp, body = helpers.get_primary(ce_url)
+  assert resp.getheader("content-type") == "application/pdf"
+
+

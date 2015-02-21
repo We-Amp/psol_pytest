@@ -26,6 +26,7 @@ def get_until(host, port, url, requestHeaders, predicate):
   while True:
     response, data = get(host, port, url)
     if predicate(response, data):
+      return response, data
       break
     if time.time() > timeout_seconds:
       raise Exception("get_until timed out")
