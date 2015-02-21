@@ -19,10 +19,10 @@ def test_inline_google_font_css_can_inline_google_font_api_loader_css(systemTest
   resp, body = helpers.get_until_primary(url, {}, lambda response, body: body.count("@font-face") == 7, userAgent=userAgent)
   lbody = body.lower()
   assert lbody.count("woff2") > 0
-  assert lbody.count("format('truetype')") > 0
-  assert lbody.count("embedded-opentype") > 0
-  assert lbody.count(".ttf") > 0
-  assert lbody.count(".eot") > 0
+  assert lbody.count("format('truetype')") == 0
+  assert lbody.count("embedded-opentype") == 0
+  assert lbody.count(".ttf") == 0
+  assert lbody.count(".eot") == 0
 
   # Now try with IE6 user-agent
   userAgent = "Mozilla/4.0 (compatible; MSIE 6.01; Windows NT 6.0)"
@@ -32,7 +32,7 @@ def test_inline_google_font_css_can_inline_google_font_api_loader_css(systemTest
   # This should get an eot font. (It might also ship a woff, so we don't
   # check_not_from for that)
   assert lbody.count(".eot") > 0
-  assert lbody.count(".ttf") > 0
+  assert lbody.count(".ttf") == 0
 
 
 def test_inline_javascript_inlines_a_small_js_file(systemTestFixture):

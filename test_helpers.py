@@ -11,6 +11,8 @@ def get_url(url, requestHeaders = {}, log=True, userAgent = None):
     # TODO(oschaaf): default user-agent
     userAgent = "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.0 (KHTML, like Gecko) Chrome/6.0.408.1 Safari/534.0"
 
+  # TODO(oschaaf): fail on ambiguous user-agent in headers and arg.
+
   http = urllib3.PoolManager()
 
   # TODO(oschaaf): we might not always want to do this, check the system test helpers.
@@ -19,7 +21,7 @@ def get_url(url, requestHeaders = {}, log=True, userAgent = None):
   body = resp.data
 
   if log:
-    print "get(): %s -> %s: %s" % (url, resp.status, resp.getheaders())
+    print "get(): %s -> %s: %s (%s)" % (url, resp.status, resp.getheaders(), requestHeaders)
   return resp, body
 
 # TODO(oschaaf): rename to get_path
@@ -35,7 +37,7 @@ def get_until(host, port, url, requestHeaders, predicate, userAgent = None):
   print "get_until(): %s" % fullurl
   timeout_seconds = time.time() + 5
   while True:
-    response, data = get(host, port, url, log=False, userAgent = userAgent)
+    response, data = get(host, port, url, log=True, userAgent = userAgent)
     if predicate(response, data):
       return response, data
       break
