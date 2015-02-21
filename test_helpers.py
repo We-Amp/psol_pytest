@@ -3,6 +3,9 @@ import test_fixtures
 import time
 import sys
 
+from wsgiref.handlers import format_date_time
+from time import mktime
+
 def get(host, port, url, requestHeaders = {}):
   http = urllib3.PoolManager()
   # TODO(oschaaf): we might not always want to do this, check the system test helpers.
@@ -57,3 +60,7 @@ def filter_test(filter_name, filter_description, filter_spec_method):
   url = "%s/%s.html?PageSpeedFilters=%s" % (test_fixtures.EXAMPLE_ROOT, filter_name, filter_name)
   resp, body = get_primary(url)
   return resp, body
+
+def http_date(d):
+  stamp = mktime(d.timetuple())
+  return format_date_time(stamp)
