@@ -1,18 +1,18 @@
-import httplib
+import urllib3
 import test_fixtures
 import time
 import sys
 
 def get(host, port, url, requestHeaders = {}):
-  http = httplib.HTTPConnection(host, port, timeout=30)
-  http.connect()
+  http = urllib3.PoolManager()
   # TODO(oschaaf): we might not always want to do this, check the system test helpers.
+  fullurl = "http://%s:%s%s" % (host, port, url)
   requestHeaders["User-Agent"] = "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.0 (KHTML, like Gecko) Chrome/6.0.408.1 Safari/534.0"
-  http.request("GET", url, headers=requestHeaders)
-  resp = http.getresponse()
-  body = resp.read()
-  print "GET http://%s:%s%s -> %s" % (host, port, url, resp.status)
-  http.close()
+  resp = http.urlopen('GET', fullurl, headers=requestHeaders)
+  body = resp.data
+
+  print "%s -> %s" % (fullurl, resp.status)
+  print "headers -> %s" % resp.getheaders()
   return resp, body
 
 def get_primary(url, requestHeaders={}):
