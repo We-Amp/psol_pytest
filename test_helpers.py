@@ -6,24 +6,29 @@ import sys
 from wsgiref.handlers import format_date_time
 from time import mktime
 
-def get(host, port, url, requestHeaders = {}, log=True, userAgent = None):
+def get_url(url, requestHeaders = {}, log=True, userAgent = None):
   if userAgent is None:
-    # TODO(oschaaf): default au
+    # TODO(oschaaf): default user-agent
     userAgent = "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.0 (KHTML, like Gecko) Chrome/6.0.408.1 Safari/534.0"
 
   http = urllib3.PoolManager()
+
   # TODO(oschaaf): we might not always want to do this, check the system test helpers.
-  fullurl = "http://%s:%s%s" % (host, port, url)
   requestHeaders["User-Agent"] = userAgent
-  resp = http.urlopen('GET', fullurl, headers=requestHeaders)
+  resp = http.urlopen('GET', url, headers=requestHeaders)
   body = resp.data
 
   if log:
-    print "get(): %s -> %s: %s" % (fullurl, resp.status, resp.getheaders())
+    print "get(): %s -> %s: %s" % (url, resp.status, resp.getheaders())
   return resp, body
 
+# TODO(oschaaf): rename to get_path
+def get(host, port, url, requestHeaders = {}, log=True, userAgent = None):
+  fullurl = "http://%s:%s%s" % (host, port, url)
+  return get_url(fullurl, requestHeaders, log, userAgent)
+
 def get_primary(url, requestHeaders={}, userAgent = None):
-  return get(test_fixtures.PRIMARY_HOST, test_fixtures.PRIMARY_PORT, url, requestHeaders)
+  return get(test_fixtures.PRIMARY_HOST, test_fixtures.PRIMARY_PORT, url, requestHeaders = requestHeaders, userAgent = userAgent)
 
 def get_until(host, port, url, requestHeaders, predicate, userAgent = None):
   fullurl = "http://%s:%s%s" % (host, port, url)
