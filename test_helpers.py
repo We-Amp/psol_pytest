@@ -4,16 +4,16 @@ import time
 import sys
 
 def get(host, port, url, requestHeaders = {}):
-  print "GET %s:%s:%s" % (host, port, url)
   http = httplib.HTTPConnection(host, port, timeout=30)
   http.connect()
   # TODO(oschaaf): we might not always want to do this, check the system test helpers.
   requestHeaders["User-Agent"] = "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.0 (KHTML, like Gecko) Chrome/6.0.408.1 Safari/534.0"
   http.request("GET", url, headers=requestHeaders)
-  response = http.getresponse()
-  data = response.read()
+  resp = http.getresponse()
+  body = resp.read()
+  print "GET http://%s:%s%s -> %s" % (host, port, url, resp.status)
   http.close()
-  return response, data
+  return resp, body
 
 def get_primary(url, requestHeaders={}):
   return get(test_fixtures.PRIMARY_HOST, test_fixtures.PRIMARY_PORT, url, requestHeaders)
