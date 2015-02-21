@@ -13,20 +13,30 @@ def test_extend_cache_images_rewrites_an_image_tag(systemTestFixture):
   #echo about to test resource ext corruption...
   #test_resource_ext_corruption $URL images/Puzzle.jpg.pagespeed.ce.91_WewrLtP.jpg
 
-
-def test_attempt_to_fetch_cache_extended_image_without_hash_should_404():
+def test_attempt_to_fetch_cache_extended_image_without_hash_should_404(systemTestFixture):
   url="%s/images/Puzzle.jpg.pagespeed.ce..jpg" % test_fixtures.REWRITTEN_ROOT
   resp, body = helpers.get_primary(url)
   assert resp.status == 404
 
-def test_cache_extended_image_should_respond_304_to_an_if_modified_since():
+def test_cache_extended_image_should_respond_304_to_an_if_modified_since(systemTestFixture):
   url="%s/images/Puzzle.jpg.pagespeed.ce.91_WewrLtP.jpg" % test_fixtures.REWRITTEN_ROOT
   now = helpers.http_date(datetime.now())
   resp, body = helpers.get_primary(url, {"If-Modified-Since" : now})
   assert resp.status == 304
 
-
-def test_legacy_format_urls_should_still_work():
+def test_legacy_format_urls_should_still_work(systemTestFixture):
   url="%s/images/ce.0123456789abcdef0123456789abcdef.Puzzle,j.jpg" % test_fixtures.REWRITTEN_ROOT
   resp, body = helpers.get_primary(url)
   assert resp.status == 200
+
+# Cache extend PDFs.
+def test_extend_cache_pdfs_pdf_cache_extension(systemTestFixture):
+  url="%s/extend_cache_pdfs.html?PageSpeedFilters=extend_cache_pdfs" % test_fixtures.EXAMPLE_ROOT
+  helpers.get_until_primary(url, {},
+    lambda response, body: body.count(".pagespeed.") == 3)
+  resp, body = helpers.get_primary(url)
+
+  assert len(re.findall("a href=\".*pagespeed.*\.pdf", body)) > 0
+  assert len(re.findall("embed src=\".*pagespeed.*\.pdf", body)) > 0
+  assert len(re.findall("<a href=\"example.notpdf\">", body)) > 0
+  assert len(re.findall("<a href=\".*pagespeed.*\\.pdf\">example.pdf\\?a=b", body)) > 0
