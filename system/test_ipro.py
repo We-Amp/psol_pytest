@@ -22,12 +22,11 @@ def test_in_place_resource_optimization(systemTestFixture):
 
   # Check that we compress the image (with IPRO).
   # Note: This requests $URL until it's size is less than $THRESHOLD_SIZE.
-  helpers.get_until_primary(url, {"X-PSA-Blocking-Rewrite":"psatest"},
+  resp, body = helpers.get_until_primary(url, {"X-PSA-Blocking-Rewrite":"psatest"},
     lambda response, content: len(content) < threshold_size)
 
   # TODO(oschaaf): The original tests also looks on the disk to check the
   # fetched file. Double check why.
-  resp, body = helpers.get_primary(url)
 
   # Check that resource is served with small Cache-Control header (since
   # we cannot cache-extend resources served under the original URL).

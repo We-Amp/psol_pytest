@@ -6,33 +6,39 @@ import sys
 from wsgiref.handlers import format_date_time
 from time import mktime
 
-def get(host, port, url, requestHeaders = {}):
+def get(host, port, url, requestHeaders = {}, log=True, userAgent = None):
+  if userAgent is None:
+    # TODO(oschaaf): default au
+    userAgent = "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.0 (KHTML, like Gecko) Chrome/6.0.408.1 Safari/534.0"
+
   http = urllib3.PoolManager()
   # TODO(oschaaf): we might not always want to do this, check the system test helpers.
   fullurl = "http://%s:%s%s" % (host, port, url)
-  requestHeaders["User-Agent"] = "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.0 (KHTML, like Gecko) Chrome/6.0.408.1 Safari/534.0"
+  requestHeaders["User-Agent"] = userAgent
   resp = http.urlopen('GET', fullurl, headers=requestHeaders)
   body = resp.data
 
-  print "%s -> %s" % (fullurl, resp.status)
-  print "headers -> %s" % resp.getheaders()
+  if log:
+    print "get(): %s -> %s: %s" % (fullurl, resp.status, resp.getheaders())
   return resp, body
 
-def get_primary(url, requestHeaders={}):
+def get_primary(url, requestHeaders={}, userAgent = None):
   return get(test_fixtures.PRIMARY_HOST, test_fixtures.PRIMARY_PORT, url, requestHeaders)
 
-def get_until(host, port, url, requestHeaders, predicate):
-  timeout_seconds = time.time() + 15
+def get_until(host, port, url, requestHeaders, predicate, userAgent = None):
+  fullurl = "http://%s:%s%s" % (host, port, url)
+  print "get_until(): %s" % fullurl
+  timeout_seconds = time.time() + 5
   while True:
-    response, data = get(host, port, url)
+    response, data = get(host, port, url, log=False, userAgent = userAgent)
     if predicate(response, data):
       return response, data
       break
     if time.time() > timeout_seconds:
-      raise Exception("get_until timed out")
+      assert not ("Timeout waiting for predicate")
 
-def get_until_primary(url, requestHeaders, predicate):
-  return get_until(test_fixtures.PRIMARY_HOST, test_fixtures.PRIMARY_PORT, url, requestHeaders, predicate)
+def get_until_primary(url, requestHeaders, predicate, userAgent = None):
+  return get_until(test_fixtures.PRIMARY_HOST, test_fixtures.PRIMARY_PORT, url, requestHeaders, predicate, userAgent = userAgent)
 
 
 # TODO(oschaaf): generic enough for all servers?
