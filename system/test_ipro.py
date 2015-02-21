@@ -33,7 +33,7 @@ def test_in_place_resource_optimization(systemTestFixture):
   # we cannot cache-extend resources served under the original URL).
   # Note: tr -d '\r' is needed because HTTP spec requires lines to end in \r\n,
   # but sed does not treat that as $.
-  cc = resp.getheader("Cache-Control")
+  cc = resp.getheader("cache-control")
   assert cc
   int_cc = int(cc.replace("max-age=",""))
   assert int_cc < 1000

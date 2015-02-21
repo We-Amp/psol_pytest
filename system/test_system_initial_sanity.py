@@ -16,7 +16,7 @@ def test_directory_mapped_to_index(systemTestFixture):
 def test_compression_enabled_for_html(systemTestFixture):
   response, body = helpers.get_primary("%s/" % test_fixtures.EXAMPLE_ROOT,
         requestHeaders = {'Accept-Encoding':'gzip'})
-  assert response.getheader("Content-Encoding") == "gzip"
+  assert response.getheader("content-encoding") == "gzip"
 
 def test_whitespace_served_as_html_behaves_sanely(systemTestFixture):
   response, body = helpers.get_primary("%s/whitespace.html" % test_fixtures.TEST_ROOT)
