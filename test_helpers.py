@@ -6,18 +6,18 @@ import sys
 from wsgiref.handlers import format_date_time
 from time import mktime
 
+# TODO(oschaaf):
+http = urllib3.PoolManager()
+
 def get_url(url, requestHeaders = {}, log=True, userAgent = None):
-  if userAgent is None:
-    # TODO(oschaaf): default user-agent
-    userAgent = "Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.0 (KHTML, like Gecko) Chrome/6.0.408.1 Safari/534.0"
+  if "User-Agent" in requestHeaders:
+    assert userAgent is None
+  else:
+    if userAgent is None:
+      userAgent = test_fixtures.DEFAULT_USER_AGENT
+    requestHeaders["User-Agent"] = userAgent
 
-  # TODO(oschaaf): fail on ambiguous user-agent in headers and arg.
-
-  http = urllib3.PoolManager()
-
-  # TODO(oschaaf): we might not always want to do this, check the system test helpers.
-  requestHeaders["User-Agent"] = userAgent
-  resp = http.urlopen('GET', url, headers=requestHeaders)
+  resp = http.request('GET', url, headers=requestHeaders)
   body = resp.data
 
   if log:
@@ -37,10 +37,11 @@ def get_until(host, port, url, requestHeaders, predicate, userAgent = None):
   print "get_until(): %s" % fullurl
   timeout_seconds = time.time() + 5
   while True:
-    response, data = get(host, port, url, log=True, userAgent = userAgent)
+    response, data = get(host, port, url, log=True, userAgent = userAgent, requestHeaders=requestHeaders)
     if predicate(response, data):
       return response, data
       break
+    time.sleep(0.1)
     if time.time() > timeout_seconds:
       assert not ("Timeout waiting for predicate")
 
@@ -50,7 +51,7 @@ def get_until_primary(url, requestHeaders, predicate, userAgent = None):
 
 # TODO(oschaaf): generic enough for all servers?
 def wait_untill_nginx_accepts():
-  timeout_seconds = time.time() + 30
+  timeout_seconds = time.time() + 5
   while True:
     try:
       print "Wait until server is ready to handle requests"
@@ -78,3 +79,5 @@ def filter_test(filter_name, filter_description, filter_spec_method):
 def http_date(d):
   stamp = mktime(d.timetuple())
   return format_date_time(stamp)
+
+
