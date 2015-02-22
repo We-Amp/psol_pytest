@@ -1,3 +1,4 @@
+from copy import copy
 import urllib3
 import test_fixtures
 import time
@@ -10,18 +11,20 @@ from time import mktime
 http = urllib3.PoolManager()
 
 def get_url(url, requestHeaders = {}, log=True, userAgent = None):
+  copyRequestHeaders = copy(requestHeaders)
   if "User-Agent" in requestHeaders:
+    print requestHeaders["User-Agent"]
     assert userAgent is None
   else:
     if userAgent is None:
       userAgent = test_fixtures.DEFAULT_USER_AGENT
-    requestHeaders["User-Agent"] = userAgent
+    copyRequestHeaders["User-Agent"] = userAgent
 
-  resp = http.request('GET', url, headers=requestHeaders)
+  resp = http.request('GET', url, headers=copyRequestHeaders)
   body = resp.data
 
   if log:
-    print "get(): %s -> %s: %s (%s)" % (url, resp.status, resp.getheaders(), requestHeaders)
+    print "get(): %s -> %s: %s (%s)" % (url, resp.status, resp.getheaders(), copyRequestHeaders)
   return resp, body
 
 # TODO(oschaaf): rename to get_path
