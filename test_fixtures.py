@@ -21,6 +21,9 @@ BAD_RESOURCE_URL="/mod_pagespeed/W.bad.pagespeed.cf.hash.css"
 DEFAULT_USER_AGENT="Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.0 (KHTML, like Gecko) Chrome/6.0.408.1 Safari/534.0"
 ############################### setup/teardown ################################
 
+HTTPS_HOST= "" #SECONDARY_HOST
+HTTPS_EXAMPLE_ROOT="http://%s/mod_pagespeed_example" % HTTPS_HOST
+
 def fin():
   os.system("killall -s QUIT nginx");
 
