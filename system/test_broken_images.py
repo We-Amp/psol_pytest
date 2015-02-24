@@ -1,16 +1,14 @@
-import pytest
+import config
 import test_helpers as helpers
-from test_fixtures import systemTestFixture
-import test_fixtures
 
 
-def test_rewrite_images_fails_broken_image(systemTestFixture):
-  url = "%s/images/xBadName.jpg.pagespeed.ic.Zi7KMNYwzD.jpg" % test_fixtures.REWRITTEN_ROOT
-  resp, body = helpers.get_primary(url)
-  assert resp.status == 404
+def test_rewrite_images_fails_broken_image():
+    url = ("%s/images/xBadName.jpg.pagespeed.ic.Zi7KMNYwzD.jpg"
+        % config.REWRITTEN_ROOT)
+    assert helpers.get_primary(url).resp.status == 404
 
-def test_rewrite_images_does_not_500_on_unoptomizable_image(systemTestFixture):
-  url = "%s/images/xOptPuzzle.jpg.pagespeed.ic.Zi7KMNYwzD.jpg" % test_fixtures.REWRITTEN_ROOT
-  resp, body = helpers.get_primary(url)
-  assert resp.status == 200
 
+def test_rewrite_images_does_not_500_on_unoptomizable_image():
+    url = ("%s/images/xOptPuzzle.jpg.pagespeed.ic.Zi7KMNYwzD.jpg"
+        % config.REWRITTEN_ROOT)
+    assert helpers.get_primary(url).resp.status == 200

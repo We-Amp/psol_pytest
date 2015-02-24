@@ -1,9 +1,8 @@
-import pytest
+import config
 import test_helpers as helpers
-from test_fixtures import systemTestFixture
-import test_fixtures
 
-
-def test_elide_attributes_removes_boolean_and_default_attributes(systemTestFixture):
-  resp, body = helpers.filter_test("elide_attributes", "some descr", "query_params")
-  assert body.count("disabled=") == 0
+def test_elide_attributes_removes_boolean_and_default_attributes():
+    filter_name = "elide_attributes"
+    url = "%s/%s.html?PageSpeedFilters=%s" % (
+        config.EXAMPLE_ROOT, filter_name, filter_name)
+    assert helpers.get_primary(url).body.count("disabled=") == 0
