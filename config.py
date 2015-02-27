@@ -24,3 +24,5 @@ HTTPS_EXAMPLE_ROOT = "http://%s/mod_pagespeed_example" % HTTPS_HOST
 PROXY_DOMAIN = "%s:%s" % (PRIMARY_HOST, PRIMARY_PORT)
 PSA_JS_LIBRARY_URL_PREFIX = "pagespeed_custom_static"
 REWRITTEN_TEST_ROOT = TEST_ROOT
+
+LOG_ROOT="/tmp/mod_pagespeed_test.oschaaf/"

@@ -2,6 +2,8 @@ from collections import namedtuple
 from copy import copy
 import errno
 import httplib
+import itertools
+import logging
 from pprint import pprint
 import re
 from socket import error as socket_error
@@ -17,11 +19,28 @@ import config
 FetchResult = namedtuple('FetchResult', 'resp body')
 http = urllib3.PoolManager()
 
+logging.basicConfig(
+    format = '%(asctime)s %(message)s',
+    filename = ('%spytest_psol.log' % config.LOG_ROOT),
+    level = logging.DEBUG,
+    filemode = "w")
+
+log = logging.getLogger("psol")
+
+fetch_count = itertools.count()
+
 # TODO(oschaaf): consider removing all these named args and just forward all
 # to http.request?
+# TODO(oschaaf): improve logging
+# TODO(oschaaf): investigate 200/None (?!) responses
+
+# TODO(oschaaf): insert tracer request header w/fetch_count?
+# TODO(oschaaf): thinking about that, also insert tracer request/test
+# Helps cross referencing between this log and nginx's log
 def fetch_url(
-    method, url, headers = None, body = None, log = True, timeout = None,
+    method, url, headers = None, body = None, timeout = None,
     check = None, proxy = None):
+    mycount = fetch_count.next()
     assert url.startswith("http")
 
     headers = {} if headers is None else copy(headers)
@@ -34,23 +53,18 @@ def fetch_url(
         if url.find(proxy) == 0:
             # Get the to-be-proxied host on the first request line
             url = url.replace(proxy, headers["Host"], 1)
+        log.debug("[%d:] fetch_url %s %s: %s" % (mycount, method, url, headers))
         pm = urllib3.ProxyManager(proxy)
         resp = pm.request(
             method, url, headers = headers, timeout = timeout, retries = False)
     else:
+        log.debug("[%d]: fetch_url %s %s: %s" % (mycount, method, url, headers))
         resp = http.request(
             method, url, headers = headers, timeout = timeout, retries = False)
     body = resp.data
 
-    if log:
-        # TODO(oschaaf): log to a file/test
-        print "fetch_url: %s %s: %s" % (method, url, resp.status)
-        print "req. headers VVVVVVVV"
-        pprint(headers)
-        print "^^^^^^^^^^^^^^^^^^^^^"
-        print "res. headers VVVVVVVV"
-        pprint(resp.getheaders())
-        print "^^^^^^^^^^^^^^^^^^^^^"
+    log.debug("[%d]: fetch_url %s %s\n%s" % (mycount, resp.status, resp.getheaders(), body))
+
     if not check is None:
         assert check(resp, body)
     return FetchResult(resp, body)
@@ -60,7 +74,6 @@ def fetch_url(
 # subsequent tries.
 # Any named arguments will be passed on to fetch_url.
 def fetch_until(method, url, predicate, *args, **kwargs):
-    print "fetch_until(): %s %s" % (method, url)
     timeout_seconds = time.time() + 5
     ok = True
     while True:
@@ -73,7 +86,7 @@ def fetch_until(method, url, predicate, *args, **kwargs):
             assert predicate(response, data)
             return FetchResult(response, data)
 
-        time.sleep(0.1)
+        time.sleep(0.05)
         if time.time() > timeout_seconds:
             # We try one more time when time us up, so we can log some info.
             if not ok:
