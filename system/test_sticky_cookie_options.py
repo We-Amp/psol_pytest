@@ -5,7 +5,6 @@ import test_helpers as helpers
 
 skip = "not config.SECONDARY_HOST"
 # TODO(oschaaf): original tests use generate_url() call!
-
 proxy = config.SECONDARY_SERVER
 
 @pytest.mark.skipif(skip)
