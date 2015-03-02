@@ -1,4 +1,6 @@
+from copy import copy
 import logging
+import os
 
 import pytest
 
@@ -38,6 +40,22 @@ logging.basicConfig(
     filemode = "w")
 
 log = logging.getLogger("psol")
+
+
+# Override all the module variables above from the environment (if specified)
+# TODO(oschaaf): only allow overriding things that make sense
+candidates = copy(globals())
+for name in candidates:
+    if name.startswith("_"):
+        continue
+    if name in os.environ:
+        globals()[name] = os.getenv(name)
+        log.debug("var: %s:%s (from env)" % (name, globals()[name]))
+        print "%s:%s (from env)" % (name, globals()[name])
+    else:
+        log.debug("var: %s:%s (default)" % (name, globals()[name]))
+        print "%s:%s (default)" % (name, globals()[name])
+
 
 #requests_log = logging.getLogger("urllib3")
 #requests_log = logging.getLogger("requests.packages.urllib3")

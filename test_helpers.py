@@ -1,14 +1,10 @@
 from collections import namedtuple
 from copy import copy
 import errno
-import httplib
-import itertools
-from pprint import pprint
+from itertools import count
 import re
 from socket import error as socket_error
-import sys
 import time
-from time import mktime
 import urllib3
 from wsgiref.handlers import format_date_time
 
@@ -17,7 +13,7 @@ from config import log
 
 FetchResult = namedtuple('FetchResult', 'resp body')
 http = urllib3.PoolManager()
-fetch_count = itertools.count()
+fetch_count = count()
 
 def patternCountEquals(self, pattern, count):
     return len(re.findall(pattern, self.body)) == count
@@ -76,21 +72,25 @@ def fetch(
 
     # Helps cross referencing between this and server log
     headers["PSOL-Fetch-Id"] = mycount
-    if proxy:
-        assert headers["Host"]
-        if url.find(proxy) == 0:
-            # Get the to-be-proxied host on the first request line
-            url = url.replace(proxy, "http://%s" % headers["Host"], 1)
 
-        log.debug("[%d:] fetch_url %s %s: %s" % (mycount, method, url, headers))
-        pm = urllib3.ProxyManager(proxy)
-        resp = pm.request(
-            method, url, headers = headers, timeout = timeout, retries = False)
-    else:
-        log.debug("[%d]: fetch_url %s %s: %s" % (mycount, method, url, headers))
-        resp = http.request(
-            method, url, headers = headers, timeout = timeout, retries = False)
+    try:
+        if proxy:
+            assert headers["Host"]
+            if url.find(proxy) == 0:
+                # Get the to-be-proxied host on the first request line
+                url = url.replace(proxy, "http://%s" % headers["Host"], 1)
 
+            log.debug("[%d:] fetch_url %s %s: %s" % (mycount, method, url, headers))
+            pm = urllib3.ProxyManager(proxy)
+            resp = pm.request(
+                method, url, headers = headers, timeout = timeout, retries = False)
+        else:
+            log.debug("[%d]: fetch_url %s %s: %s" % (mycount, method, url, headers))
+            resp = http.request(
+                method, url, headers = headers, timeout = timeout, retries = False)
+    except:
+        log.debug("[%d]: fetch_url excepted", mycount)
+        raise
     if not allow_error_responses:
         assert resp.status < 400, resp.status
     # TODO(oschaaf): hides arg! FIX!
@@ -118,7 +118,7 @@ def fetch_generator(url, *args, **kwargs):
 # Transform the passed in date into a formatted string usable in
 # http Date: headers
 def http_date(d):
-    stamp = mktime(d.timetuple())
+    stamp = time.mktime(d.timetuple())
     return format_date_time(stamp)
 
 
