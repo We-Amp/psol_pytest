@@ -10,7 +10,7 @@ combined_css = ".yellow{background-color:#ff0}"
 url_regex = r'http:\/\/[^ ]+css\.pagespeed[^ ]+\.css'
 url_path = "/mod_pagespeed_test/unauthorized/inline_css.html"
 opts  = "?PageSpeedFilters=rewrite_images,rewrite_css"
-page_url = "%s%s%s" % (config.SECONDARY_SERVER, url_path, opts)
+page_url = "%s%s" % (url_path, opts)
 
 
 @pytest.mark.skipif(skip)

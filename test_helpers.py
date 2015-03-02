@@ -12,7 +12,6 @@ import config
 from config import log
 
 FetchResult = namedtuple('FetchResult', 'resp body')
-http = urllib3.PoolManager()
 fetch_count = count()
 
 def patternCountEquals(self, pattern, count):
@@ -51,7 +50,7 @@ class FetchUntil:
 # or the primary test host if none existed.
 # TODO(oschaaf): consider passing on kwargs to http.request()?
 def fetch(
-    url, headers = None, body = None, timeout = None, proxy = "",
+    url, headers = None, timeout = None, proxy = "",
     method = "GET", allow_error_responses = False):
     mycount = fetch_count.next()
     headers = {} if headers is None else copy(headers)
@@ -59,12 +58,16 @@ def fetch(
     if not "User-Agent" in headers:
         headers["User-Agent"] = config.DEFAULT_USER_AGENT
 
+
+    if proxy:
+        assert headers["Host"]
+
     # If a relative path was specified, absolutify it assuming this is a request
     # for the primary test host.
     # TODO(oschaaf): clean up host handling mess
     if not url.startswith("http"):
         if "Host" in headers:
-            assert 0
+            url = "http://%s%s" % (headers["Host"], url)
         else:
             if proxy:
                 url = "%s%s" % (proxy, url)
@@ -73,32 +76,26 @@ def fetch(
 
     # Helps cross referencing between this and server log
     headers["PSOL-Fetch-Id"] = mycount
-
+    fetch_method = None
+    log.debug("[%d:] fetch_url %s %s: %s" % (mycount, method, url, headers))
     try:
         if proxy:
-            assert headers["Host"]
-            if url.find(proxy) == 0:
-                # Get the to-be-proxied host on the first request line
-                url = url.replace(proxy, "http://%s" % headers["Host"], 1)
-
-            log.debug("[%d:] fetch_url %s %s: %s" % (mycount, method, url, headers))
-            pm = urllib3.ProxyManager(proxy)
-            resp = pm.request(
-                method, url, headers = headers, timeout = timeout, retries = False)
+            fetch_method = urllib3.ProxyManager(proxy).request
         else:
-            log.debug("[%d]: fetch_url %s %s: %s" % (mycount, method, url, headers))
-            resp = http.request(
-                method, url, headers = headers, timeout = timeout, retries = False)
+            fetch_method = urllib3.PoolManager().request
+
+        resp = fetch_method(method, url, headers = headers, timeout = timeout,
+            retries = False)
     except:
         log.debug("[%d]: fetch_url excepted", mycount)
         raise
-    if not allow_error_responses:
-        assert resp.status < 400, resp.status
-    # TODO(oschaaf): hides arg! FIX!
     body = resp.data
 
     log.debug("[%d]: fetch_url %s %s\n>>>>>>>>>>\n%s<<<<<<<<<<<<<" %
         (mycount, resp.status, resp.getheaders(), body))
+
+    if not allow_error_responses:
+        assert resp.status < 400, resp.status
 
     return FetchResult(resp, body)
 
