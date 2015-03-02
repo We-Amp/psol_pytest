@@ -6,14 +6,16 @@ import test_helpers as helpers
 skip = "not config.SECONDARY_HOST"
 # TODO(oschaaf): original tests use generate_url() call!
 
+proxy = config.SECONDARY_SERVER
+
 @pytest.mark.skipif(skip)
 class TestStickyOptionCookies:
     # Sticky option cookies: initially remove_comments only
     def test_initially_remove_comments_only(self):
         headers = {"Host": "options-by-cookies-enabled.example.com"}
         page = "/mod_pagespeed_test/forbidden.html"
-        url = "%s%s" % (config.SECONDARY_SERVER, page)
-        resp, body = helpers.fetch(url, headers = headers)
+        url = "%s" % page
+        resp, body = helpers.fetch(url, headers = headers, proxy = proxy)
         assert body.count('<!-- This comment should not be deleted -->')
         assert body.count('  ') == 0
         # TODO(oschaaf):
@@ -27,8 +29,8 @@ class TestStickyOptionCookies:
                 "?PageSpeedStickyQueryParameters=wrong_secret"
                 "&PageSpeedFilters=+remove_comments"
             )
-        url = "%s%s" % (config.SECONDARY_SERVER, page)
-        resp, body = helpers.fetch(url, headers = headers)
+        url = "%s" % page
+        resp, body = helpers.fetch(url, headers = headers, proxy = proxy)
         assert body.count('<!-- This comment should not be deleted -->') == 0
         assert body.count('  ') == 0
         assert not resp.getheader("set-cookie")
@@ -41,8 +43,8 @@ class TestStickyOptionCookies:
                 "?PageSpeedStickyQueryParameters=sticky_secret"
                 "&PageSpeedFilters=+remove_comments"
             )
-        url = "%s%s" % (config.SECONDARY_SERVER, page)
-        resp, body = helpers.fetch(url, headers = headers)
+        url = "%s" % page
+        resp, body = helpers.fetch(url, headers = headers, proxy = proxy)
         assert body.count('<!-- This comment should not be deleted -->') == 0
         assert body.count('  ') == 0
         assert resp.getheader("set-cookie").find(
@@ -60,8 +62,8 @@ class TestStickyOptionCookies:
                 "?PageSpeedStickyQueryParameters=sticky_secret"
                 "&PageSpeedFilters=+remove_comments"
             )
-        url = "%s%s" % (config.SECONDARY_SERVER, page)
-        result = helpers.fetch(url, headers = headers)
+        url = "%s" % page
+        result = helpers.fetch(url, headers = headers, proxy = proxy)
         return result.resp.getheader("set-cookie").split(";")[0]
 
     # Sticky option cookies: no token leaves option cookies untouched
@@ -71,8 +73,8 @@ class TestStickyOptionCookies:
         headers = {"Host": "options-by-cookies-enabled.example.com",
             "Cookie" : "%s" % captured_cookie}
         page = "/mod_pagespeed_test/forbidden.html"
-        url = "%s%s" % (config.SECONDARY_SERVER, page)
-        resp, body = helpers.fetch(url, headers = headers)
+        url = "%s" % page
+        resp, body = helpers.fetch(url, headers = headers, proxy = proxy)
         assert body.count('<!-- This comment should not be deleted -->') == 0
         assert body.count('  ') == 0
         assert not resp.getheader("set-cookie")
@@ -89,8 +91,8 @@ class TestStickyOptionCookies:
             "Cookie" : "%s" % captured_cookie}
         page = ("/mod_pagespeed_test/forbidden.html?"
                 "PageSpeedStickyQueryParameters=off")
-        url = "%s%s" % (config.SECONDARY_SERVER, page)
-        resp, body = helpers.fetch(url, headers = headers)
+        url = "%s" % page
+        resp, body = helpers.fetch(url, headers = headers, proxy = proxy)
         assert body.count('<!-- This comment should not be deleted -->') == 0
         assert body.count('  ') == 0
         assert resp.getheader("set-cookie").find(
