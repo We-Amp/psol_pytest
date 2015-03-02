@@ -12,7 +12,7 @@ filters = [
     ]
 
 def inspect_via_debug_filter(url, filter_code, headers = None):
-    resp, body = helpers.get_primary(url, headers = headers)
+    resp, body = helpers.fetch(url, headers = headers)
 
     # Debug filter enabled
     assert body.count("#NumFlushes") == 1
@@ -39,7 +39,7 @@ def inspect_via_rewriting(url, filter_name, headers = None):
     # difference.
     url_passthrough = ("%s/%s.html?PageSpeedFilters=" %
         (config.EXAMPLE_ROOT, filter_name))
-    passthrough_resp, passthrough_body = helpers.get_primary(url_passthrough)
+    passthrough_resp, passthrough_body = helpers.fetch(url_passthrough)
 
     assert passthrough_resp.status == 200
     # No debug filter enabled
@@ -52,7 +52,7 @@ def inspect_via_rewriting(url, filter_name, headers = None):
       headers = {}
     headers["X-PSA-Blocking-Rewrite"] = "psatest"
 
-    _resp, body = helpers.get_primary(url, headers = headers)
+    _resp, body = helpers.fetch(url, headers = headers)
     # No debug filter enabled
     assert body.count("#NumFlushes") == 0
 

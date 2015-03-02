@@ -9,7 +9,7 @@ import test_helpers as helpers
 def test_lazyload_images():
     url = ("%s/lazyload_images.html?PageSpeedFilters=lazyload_images" %
         config.EXAMPLE_ROOT)
-    _resp, body = helpers.get_primary(url)
+    _resp, body = helpers.fetch(url)
 
     assert body.count("pagespeed_lazy_src=\"images/Puzzle.jpg\"")
     assert body.count("pagespeed.lazyLoadInit")  # inline script injected
@@ -18,7 +18,7 @@ def test_lazyload_images():
 def test_lazyload_images_optimize_mode():
     url = ("%s/lazyload_images.html?PageSpeedFilters=lazyload_images" %
         config.EXAMPLE_ROOT)
-    resp, body = helpers.get_primary(url)
+    resp, body = helpers.fetch(url)
     assert body.count("pagespeed.lazyLoad")
     assert not re.search('/\*', body)
     assert body.count("PageSpeed=noscript")
@@ -37,7 +37,7 @@ def test_lazyload_images_optimize_mode():
     proxy_url = "http://%s/%s/%s" %\
         (config.PROXY_DOMAIN, config.PSA_JS_LIBRARY_URL_PREFIX, blank_gif_src)
 
-    resp, body = helpers.get_url(proxy_url)
+    resp, body = helpers.fetch(proxy_url)
 
     assert resp.status == 200
     assert resp.getheader("cache-control") == "max-age=31536000"
@@ -50,7 +50,7 @@ def test_lazyload_images_optimize_mode():
 def test_lazyload_images_debug_mode():
     url = ("%s/lazyload_images.html?PageSpeedFilters=lazyload_images,debug" %
         config.EXAMPLE_ROOT)
-    _resp, body = helpers.get_primary(url)
+    _resp, body = helpers.fetch(url)
     assert body.count("pagespeed.lazyLoad")
     assert not re.search('/\*', body)
     assert not body.count("goog.require")

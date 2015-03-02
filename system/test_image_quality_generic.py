@@ -10,9 +10,11 @@ def test_quality_of_jpeg_output_images_with_generic_quality_flag():
         "PageSpeedFilters": "rewrite_images",
         "PageSpeedImageRecompressionQuality": "75"}
     # 2 images optimized
-    _resp, body = helpers.get_until_primary(
-        url, lambda _resp, body: body.count(".pagespeed.ic") == 2,
-        headers = headers)
+    result, success = helpers.FetchUntil(url, headers = headers).waitFor(
+        helpers.stringCountEquals, ".pagespeed.ic", 2)
+    assert success, result.body
+    body = result.body
+
     results = re.findall(r'[^"]256x192.*Puzzle.*pagespeed.ic[^"]*', body)
 
     # Sanity check, we should only have one result
@@ -27,7 +29,7 @@ def test_quality_of_jpeg_output_images_with_generic_quality_flag():
              config.EXAMPLE_ROOT,
              x)) for x in results]
 
-    image_resp, image_body = helpers.get_url(results[0], headers)
+    image_resp, image_body = helpers.fetch(results[0], headers)
 
     # This filter produces different images on 32 vs 64 bit builds. On 32 bit,
     # the size is 8157B, while on 64 it is 8155B. Initial investigation showed

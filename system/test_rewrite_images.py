@@ -9,38 +9,40 @@ def test_rewrite_images_inlines_compresses_and_resizes():
     url = ("%s/rewrite_images.html?PageSpeedFilters=rewrite_images" %
         config.EXAMPLE_ROOT)
 
-    # TODO(oschaaf): fetch_until and blocking rewrite??
+    # TODO(oschaaf): FetchUntil and blocking rewrite??
     # Images inlined.
-    helpers.get_until_primary(
-        url,
-        lambda _resp, body: body.count("data:image/png") == 1)
+    result, success = helpers.FetchUntil(url).waitFor(
+        helpers.stringCountEquals, "data:image/png", 1)
+    assert success, result.body
+
+
     # Images rewritten.
-    helpers.get_until_primary(
-        url,
-        lambda _resp, body: body.count(".pagespeed.ic") == 2)
+    result, success = helpers.FetchUntil(url).waitFor(
+        helpers.stringCountEquals, ".pagespeed.ic", 2)
+    assert success, result.body
 
     # Verify with a blocking fetch that pagespeed_no_transform worked and was
     # stripped.
-    helpers.get_until_primary(
-        url,
-        lambda _resp, body: body.count("images/disclosure_open_plus.png") == 1
-        , headers = {"X-PSA-Blocking-Rewrite": "psatest"})
+    headers = {"X-PSA-Blocking-Rewrite": "psatest"}
+    result, success = helpers.FetchUntil(url, headers = headers).waitFor(
+        helpers.stringCountEquals, "images/disclosure_open_plus.png", 1)
+    assert success, result.body
 
-    helpers.get_until_primary(
-        url,
-        lambda _resp, body: body.count('"pagespeed_no_transform"') == 0,
-        headers = {"X-PSA-Blocking-Rewrite": "psatest"})
+    result, success = helpers.FetchUntil(url, headers = headers).waitFor(
+        helpers.stringCountEquals, '"pagespeed_no_transform"', 0)
+    assert success, result.body
 
 
 def test_size_of_rewritten_image():
     url = ("%s/rewrite_images.html?PageSpeedFilters=rewrite_images" %
         config.EXAMPLE_ROOT)
-    # Note: We cannot do this above because the intervening fetch_untils will
+    # Note: We cannot do this above because the intervening FetchUntils will
     # clean up $OUTDIR.
-    _resp, body = helpers.get_until_primary(
-        url,
-        lambda _resp, body: body.count(".pagespeed.ic") == 2,
-        headers = {"Accept-Encoding": "gzip"})
+    headers = {"Accept-Encoding": "gzip"}
+    result, success = helpers.FetchUntil(url, headers = headers).waitFor(
+        helpers.stringCountEquals, ".pagespeed.ic", 2)
+    assert success, result.body
+    body = result.body
     results = re.findall(r'[^"]*.pagespeed.ic[^"]*', body)
 
     # If PreserveUrlRelativity is on, we need to find the relative URL and
@@ -54,8 +56,8 @@ def test_size_of_rewritten_image():
              x)) for x in results]
 
     assert len(results) == 2
-    _resp_img0, body_img0 = helpers.get_url(results[0])
-    resp_img1, body_img1 = helpers.get_url(results[1])
+    _resp_img0, body_img0 = helpers.fetch(results[0])
+    resp_img1, body_img1 = helpers.fetch(results[1])
 
     assert len(body_img0) < 25000  # re-encoded
     assert len(body_img1) < 24126  # resized

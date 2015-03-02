@@ -14,7 +14,7 @@ def test_local_storage_cache_inline_css_inline_images_optimize_mode():
     filter_name = "local_storage_cache,inline_css,inline_images"
     url = "%s/local_storage_cache.html?PageSpeedFilters=%s" % (
         config.EXAMPLE_ROOT, filter_name)
-    _resp, body = helpers.get_primary(url, headers)
+    _resp, body = helpers.fetch(url, headers)
     assert body.count("pagespeed.localStorageCacheInit()")
     assert body.count(' pagespeed_lsc_url=') == 2
     assert body.count("yellow {background-color: yellow")
@@ -31,7 +31,7 @@ def test_local_storage_cache_inline_css_inline_images_debug_debug_mode():
     filter_name = "local_storage_cache,inline_css,inline_images,debug"
     url = "%s/local_storage_cache.html?PageSpeedFilters=%s" % (
         config.EXAMPLE_ROOT, filter_name)
-    _resp, body = helpers.get_primary(url, headers)
+    _resp, body = helpers.fetch(url, headers)
 
     assert body.count("pagespeed.localStorageCacheInit()")
     assert body.count(' pagespeed_lsc_url=') == 2
@@ -67,7 +67,7 @@ def test_local_storage_cache_inline_css_inline_images_debug_debug_mode():
     # url = "%s/local_storage_cache.html?PageSpeedFilters=%s" % (
     #    config.EXAMPLE_ROOT, filter_name)
 
-    _resp, body = helpers.get_primary(url, headers)
+    _resp, body = helpers.fetch(url, headers)
     #print body
     # Check that this run did NOT inline the data.
 

@@ -11,8 +11,9 @@ def test_rewrite_images_rewrite_css_rewrite_style_attributes_with_url():
         "rewrite_images,rewrite_css,rewrite_style_attributes_with_url")
     url = "%s/%s" % (config.EXAMPLE_ROOT, page)
 
-    helpers.get_until_primary(url,
-        lambda _resp, body: body.count("BikeCrashIcn.png.pagespeed.ic.") == 1)
+    result, success = helpers.FetchUntil(url).waitFor(
+        helpers.stringCountEquals, "BikeCrashIcn.png.pagespeed.ic.", 1)
+    assert success, result.body
 
     # TODO(oschaaf):?
     # check run_wget_with_args $URL
@@ -23,8 +24,11 @@ def test_two_images_in_the_same_style_block():
             "rewrite_images,rewrite_css,rewrite_style_attributes_with_url")
     url = "%s/%s" % (config.EXAMPLE_ROOT, page)
     pattern = r'BikeCrashIcn.png.pagespeed.ic.*BikeCrashIcn.png.pagespeed.ic'
-    helpers.get_until_primary(url,
-        lambda _resp, body: len(re.findall(pattern, body)) == 1)
+
+    result, success = helpers.FetchUntil(url).waitFor(
+        helpers.patternCountEquals, pattern, 1)
+    assert success, result.body
+
 
     # TODO(oschaaf):?
     # check run_wget_with_args $URL

@@ -7,5 +7,7 @@ def test_canonicalize_javascript_libraries_finds_library_urls():
     url = ("%s/canonicalize_javascript_libraries.html?PageSpeedFilters="
           "canonicalize_javascript_libraries" % config.EXAMPLE_ROOT)
     expect  = "http://www.modpagespeed.com/rewrite_javascript.js"
-    helpers.get_until_primary(url,
-        helpers.CheckSubstringCountEquals(expect, 1))
+
+    last, success = helpers.FetchUntil(url).waitFor(
+        helpers.stringCountEquals, expect, 1)
+    assert success, last.body

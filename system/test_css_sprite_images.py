@@ -1,6 +1,7 @@
 import re
 
 import config
+from itertools import takewhile
 import test_helpers as helpers
 
 
@@ -8,26 +9,26 @@ def test_inline_css_rewrite_css_sprite_images_sprites_images_in_css():
     page = ("sprite_images.html?PageSpeedFilters=inline_css,rewrite_css,"
         "sprite_images")
     url = "%s/%s" % (config.EXAMPLE_ROOT, page)
-
     pattern = r'Cuppa.png.*BikeCrashIcn.png.*IronChef2.gif.*.pagespeed.is.*.png'
-    helpers.get_until_primary(url,  lambda _resp, body: len(
-            re.findall(
-                pattern,
-                body)) == 1)
 
+    result, success = helpers.FetchUntil(url).waitFor(
+        helpers.patternCountEquals, pattern, 1)
+    assert success, result.body
 
 def test_rewrite_css_sprite_images_sprites_images_in_css():
     page = "sprite_images.html?PageSpeedFilters=rewrite_css,sprite_images"
     url = "%s/%s" % (config.EXAMPLE_ROOT, page)
-    _resp, body = helpers.get_until_primary(
-        url, lambda _resp, body: body.count("css.pagespeed.cf") == 1)
+    result, success = helpers.FetchUntil(url).waitFor(
+        helpers.stringCountEquals, "css.pagespeed.cf", 1)
 
-    # Extract out the rewritten CSS file from the HTML saved by fetch_until
-    # above (see -save and definition of fetch_until).  Fetch that CSS
+    assert success, result
+
+    # Extract out the rewritten CSS file from the HTML saved by FetchUntil
+    # above (see -save and definition of FetchUntil).  Fetch that CSS
     # file and look inside for the sprited image reference (ic.pagespeed.is...).
     results = re.findall(
         r'styles/A\.sprite_images\.css\.pagespeed\.cf\..*\.css',
-        body)
+        result.body)
 
     # If PreserveUrlRelativity is on, we need to find the relative URL and
     # absolutify it ourselves.
@@ -43,4 +44,4 @@ def test_rewrite_css_sprite_images_sprites_images_in_css():
     css_url = results[0]
 
     print "css_url: %s" % css_url
-    assert helpers.get_url(css_url).body.count("ic.pagespeed.is") > 0
+    assert helpers.fetch(css_url).body.count("ic.pagespeed.is") > 0

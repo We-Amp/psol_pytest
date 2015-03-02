@@ -9,9 +9,9 @@ def test_extend_cache_images_rewrites_an_image_tag():
     url = ("%s/extend_cache.html?PageSpeedFilters=extend_cache_images" %
         config.EXAMPLE_ROOT)
     pattern = r'src.*/Puzzle[.]jpg[.]pagespeed[.]ce[.].*[.]jpg'
-    helpers.get_until_primary(
-        url,
-        lambda _resp, body: len(re.findall(pattern, body)) == 1)
+    result, success = helpers.FetchUntil(url).waitFor(
+        helpers.patternCountEquals, pattern, 1)
+    assert success, result.body
     # echo about to test resource ext corruption...
     # test_resource_ext_corruption $URL
     # images/Puzzle.jpg.pagespeed.ce.91_WewrLtP.jpg
@@ -19,21 +19,21 @@ def test_extend_cache_images_rewrites_an_image_tag():
 
 def test_attempt_to_fetch_cache_extended_image_without_hash_should_404():
     url = "%s/images/Puzzle.jpg.pagespeed.ce..jpg" % config.REWRITTEN_ROOT
-    assert helpers.get_primary(url).resp.status == 404
+    assert helpers.fetch(url, allow_error_responses = True).resp.status == 404
 
 
 def test_cache_extended_image_should_respond_304_to_an_if_modified_since():
     url = ("%s/images/Puzzle.jpg.pagespeed.ce.91_WewrLtP.jpg" %
         config.REWRITTEN_ROOT)
     now = helpers.http_date(datetime.now())
-    result = helpers.get_primary(url, {"If-Modified-Since": now})
+    result = helpers.fetch(url, {"If-Modified-Since": now})
     assert result.resp.status == 304
 
 
 def test_legacy_format_urls_should_still_work():
     url = ("%s/images/ce.0123456789abcdef0123456789abcdef.Puzzle,j.jpg" %
         config.REWRITTEN_ROOT)
-    assert helpers.get_primary(url).resp.status == 200
+    assert helpers.fetch(url).resp.status == 200
 
 # Cache extend PDFs.
 
@@ -41,9 +41,10 @@ def test_legacy_format_urls_should_still_work():
 def test_extend_cache_pdfs_pdf_cache_extension():
     url = ("%s/extend_cache_pdfs.html?PageSpeedFilters=extend_cache_pdfs" %
         config.EXAMPLE_ROOT)
-    helpers.get_until_primary(
-        url, lambda _resp, body: body.count(".pagespeed.") == 3)
-    _resp, body = helpers.get_primary(url)
+    result, success = helpers.FetchUntil(url).waitFor(
+        helpers.stringCountEquals, ".pagespeed.", 3)
+    assert success, result.body
+    body = result.body
 
     assert len(re.findall("a href=\".*pagespeed.*\.pdf", body)) > 0
     assert len(re.findall("embed src=\".*pagespeed.*\.pdf", body)) > 0
@@ -57,9 +58,12 @@ def test_extend_cache_pdfs_pdf_cache_extension():
 def test_cache_extended_pdfs_load_and_have_the_right_mime_type():
     url = ("%s/extend_cache_pdfs.html?PageSpeedFilters=extend_cache_pdfs" %
         config.EXAMPLE_ROOT)
-    helpers.get_until_primary(
-        url, lambda _resp, body: body.count(".pagespeed.") == 3)
-    resp, body = helpers.get_primary(url)
+
+    result, success = helpers.FetchUntil(url).waitFor(
+        helpers.stringCountEquals, ".pagespeed.", 3)
+    assert success, result.body
+    body = result.body
+
     results = re.findall(r'http://[^\"]*pagespeed.[^\"]*\.pdf', body)
     ce_url_prepend = ""
     if len(results) == 0:
@@ -73,5 +77,5 @@ def test_cache_extended_pdfs_load_and_have_the_right_mime_type():
     ce_url = "%s/%s" % (ce_url_prepend, results[1])
     print "Extracted cache-extended url: %s" % ce_url
 
-    resp, body = helpers.get_primary(ce_url)
+    resp, body = helpers.fetch(ce_url)
     assert resp.getheader("content-type") == "application/pdf"

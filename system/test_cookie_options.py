@@ -13,7 +13,7 @@ def test_setting_cookie_on_options_no_cookie():
     headers = {"Host": "options-by-cookies-enabled.example.com"}
     page = "/mod_pagespeed_test/forbidden.html"
     url = "%s%s" % (config.SECONDARY_SERVER, page)
-    _resp, body = helpers.get_url(url, headers = headers)
+    _resp, body = helpers.fetch(url, headers = headers)
     assert body.count("<!--")
     assert body.count("  ") == 0
 
@@ -25,7 +25,7 @@ def test_setting_cookie_on_options_takes_effect():
         "Cookie" : "PageSpeedFilters=%2bremove_comments"}
     page = "/mod_pagespeed_test/forbidden.html"
     url = "%s%s" % (config.SECONDARY_SERVER, page)
-    _resp, body = helpers.get_url(url, headers = headers)
+    _resp, body = helpers.fetch(url, headers = headers)
     assert body.count("<!--") == 0
     assert body.count("  ") == 0
 
@@ -37,7 +37,7 @@ def test_setting_cookie_on_options_invalid_cookie_takes_no_effect():
         "Cookie" : "PageSpeedFilters=+remove_comments"}
     page = "/mod_pagespeed_test/forbidden.html"
     url = "%s%s" % (config.SECONDARY_SERVER, page)
-    _resp, body = helpers.get_url(url, headers = headers)
+    _resp, body = helpers.fetch(url, headers = headers)
     assert body.count("<!--")
     assert body.count("  ") == 0
 
@@ -48,7 +48,7 @@ def test_setting_cookie_on_options_no_cookie():
     headers = {"Host": "options-by-cookies-disabled.example.com"}
     page = "/mod_pagespeed_test/forbidden.html"
     url = "%s%s" % (config.SECONDARY_SERVER, page)
-    _resp, body = helpers.get_url(url, headers = headers)
+    _resp, body = helpers.fetch(url, headers = headers)
     assert body.count("<!--")
     assert body.count("  ")
 
@@ -59,6 +59,6 @@ def test_setting_cookie_on_options_cookie_no_effect():
         "Cookie" : "PageSpeedFilters=%2bremove_comments"}
     page = "/mod_pagespeed_test/forbidden.html"
     url = "%s%s" % (config.SECONDARY_SERVER, page)
-    _resp, body = helpers.get_url(url, headers = headers)
+    _resp, body = helpers.fetch(url, headers = headers)
     assert body.count("<!--")
     assert body.count("  ")

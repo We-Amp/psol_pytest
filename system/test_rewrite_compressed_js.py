@@ -16,6 +16,7 @@ that we can inline and minify that file.
     url = ("%s/rewrite_compressed_js.html?PageSpeedFilters=rewrite_javascript,"
         "inline_javascript" % config.TEST_ROOT)
 
-    helpers.get_until_primary(
-        url,
-        lambda _resp, body: len(re.findall("Hello'", body)) == 1)
+    result, success = helpers.FetchUntil(url).waitFor(
+        helpers.patternCountEquals, "Hello'", 1)
+    assert success, result.body
+

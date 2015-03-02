@@ -9,11 +9,13 @@ def test_inline_preview_images_optimize_mode():
     filter_name = "inline_preview_images"
     url = "%s/delay_images.html?PageSpeedFilters=%s" % (
         config.EXAMPLE_ROOT, filter_name)
-    helpers.get_until_primary(url,
-        lambda _resp, body: body.count("pagespeed.delayImagesInit") == 1,
-        headers)
-    helpers.get_until_primary(url,
-        lambda  _resp, body: body.count("/*") == 0, headers)
+
+    result, success = helpers.FetchUntil(url, headers = headers).waitFor(
+        helpers.stringCountEquals, "pagespeed.delayImagesInit", 1)
+    assert success, result.body
+    result, success = helpers.FetchUntil(url).waitFor(
+        helpers.stringCountEquals, "/*", 0)
+    assert success, result.body
 
     # TODO
     # check run_wget_with_args $URL
@@ -24,9 +26,9 @@ def test_inline_preview_images_debug_mode():
     filter_name = "inline_preview_images,debug"
     url = "%s/delay_images.html?PageSpeedFilters=%s" % (
         config.EXAMPLE_ROOT, filter_name)
-    helpers.get_until_primary(url,
-        lambda _resp, body: body.count("pagespeed.delayImagesInit") == 4,
-        headers=headers)
+    result, success = helpers.FetchUntil(url, headers = headers).waitFor(
+        helpers.stringCountEquals, "pagespeed.delayImagesInit", 4)
+    assert success, result.body
 
     # TODO
     # check run_wget_with_args $URL

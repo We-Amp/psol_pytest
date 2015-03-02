@@ -7,8 +7,11 @@ import test_helpers as helpers
 def test_filters_do_not_rewrite_blacklisted_javascript_files():
     url = ("%s/blacklist/blacklist.html?PageSpeedFilters="
         "extend_cache,rewrite_javascript,trim_urls" % config.TEST_ROOT)
-    _resp, body = helpers.get_until_primary(
-        url, lambda _resp, body: body.count(".js.pagespeed.") == 4)
+    result, success = helpers.FetchUntil(url).waitFor(
+        helpers.stringCountEquals, ".js.pagespeed.", 4)
+    assert success, result.body
+    body = result.body
+
     assert len(
         re.findall(
             r'<script src=\".*normal\.js\.pagespeed\..*\.js\">',

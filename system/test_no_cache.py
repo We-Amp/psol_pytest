@@ -11,7 +11,7 @@ no-cache header is preserved.
 """
     url = "%s/no_cache/hello.js.pagespeed.ce.0.js" % config.REWRITTEN_TEST_ROOT
 
-    resp, body = helpers.get_primary(url, {})
+    resp, body = helpers.fetch(url)
     assert body.count('Hello')
     assert resp.getheader("cache-control").count("no-cache")
 
@@ -23,6 +23,6 @@ non-on-the-fly filters.
 """
     url = "%s/no_cache/hello.js.pagespeed.jm.0.js" % config.REWRITTEN_TEST_ROOT
 
-    resp, body = helpers.get_primary(url, {})
+    resp, body = helpers.fetch(url)
     assert body.count('Hello')
     assert resp.getheader("cache-control").count("no-cache")

@@ -7,6 +7,8 @@ def test_dedup_inlined_images_inline_images():
     filter_name = "dedup_inlined_images,inline_images"
     url = "%s/dedup_inlined_images.html?PageSpeedFilters=%s" % (
         config.EXAMPLE_ROOT, filter_name)
-    res = helpers.get_until_primary(url,
-        lambda resp, body: body.count("inlineImg(") == 4)
-    assert res.body.count("PageSpeed=noscript")
+    result, success = helpers.FetchUntil(url).waitFor(
+        helpers.stringCountEquals, "inlineImg(", 4)
+
+    assert success, result.body
+    assert result.body.count("PageSpeed=noscript")

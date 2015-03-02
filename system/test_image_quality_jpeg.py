@@ -13,9 +13,10 @@ def test_quality_of_jpeg_output_images():
         "PageSpeedJpegRecompressionQuality": "70"}
 
     # 2 images optimized
-    _resp, body = helpers.get_until_primary(
-        url, lambda _resp, body: body.count(".pagespeed.ic") == 2,
-        headers = headers)
+    result, success = helpers.FetchUntil(url, headers = headers).waitFor(
+        helpers.stringCountEquals, ".pagespeed.ic", 2)
+    assert success, result.body
+    body = result.body
     results = re.findall(r'[^"]256x192.*Puzzle.*pagespeed.ic[^"]*', body)
 
     # Sanity check, we should only have one result
@@ -30,7 +31,7 @@ def test_quality_of_jpeg_output_images():
              config.EXAMPLE_ROOT,
              x)) for x in results]
 
-    image_resp, image_body = helpers.get_url(results[0], headers)
+    image_resp, image_body = helpers.fetch(results[0], headers)
 
     # If this this test fails because the image size is 7673 bytes it means
     # that image_rewrite_filter.cc decided it was a good idea to convert to

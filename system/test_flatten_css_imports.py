@@ -7,7 +7,7 @@ def test_flatten_css_imports_rewrite_css_default_limit():
     url = "%s/flatten_css_imports.html?PageSpeedFilters=%s" % (
         config.EXAMPLE_ROOT, filter_name)
     headers = {"X-PSA-Blocking-Rewrite" : "psatest"}
-    _resp, body = helpers.get_primary(url, headers)
+    _resp, body = helpers.fetch(url, headers)
     assert body.count("@import url") == 0
     assert body.count("yellow{background-color:")
 
@@ -19,7 +19,7 @@ def test_flatten_css_imports_rewrite_css_tiny_limit():
     headers = {"X-PSA-Blocking-Rewrite" : "psatest",
         "PageSpeedCssFlattenMaxBytes" : "5"}
 
-    _resp, body = helpers.get_primary(url, headers)
+    _resp, body = helpers.fetch(url, headers)
     assert body.count("@import url")
     assert body.count("yellow{background-color:") == 0
 
@@ -31,7 +31,7 @@ def test_flatten_css_imports_rewrite_css_medium_limit():
     headers = {"X-PSA-Blocking-Rewrite" : "psatest",
         "PageSpeedCssFlattenMaxBytes" : "50"}
 
-    _resp, body = helpers.get_primary(url, headers)
+    _resp, body = helpers.fetch(url, headers)
     assert body.count("@import url")
     assert body.count("yellow{background-color:") == 0
 

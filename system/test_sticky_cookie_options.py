@@ -13,7 +13,7 @@ class TestStickyOptionCookies:
         headers = {"Host": "options-by-cookies-enabled.example.com"}
         page = "/mod_pagespeed_test/forbidden.html"
         url = "%s%s" % (config.SECONDARY_SERVER, page)
-        resp, body = helpers.get_url(url, headers = headers)
+        resp, body = helpers.fetch(url, headers = headers)
         assert body.count('<!-- This comment should not be deleted -->')
         assert body.count('  ') == 0
         # TODO(oschaaf):
@@ -28,7 +28,7 @@ class TestStickyOptionCookies:
                 "&PageSpeedFilters=+remove_comments"
             )
         url = "%s%s" % (config.SECONDARY_SERVER, page)
-        resp, body = helpers.get_url(url, headers = headers)
+        resp, body = helpers.fetch(url, headers = headers)
         assert body.count('<!-- This comment should not be deleted -->') == 0
         assert body.count('  ') == 0
         assert not resp.getheader("set-cookie")
@@ -42,7 +42,7 @@ class TestStickyOptionCookies:
                 "&PageSpeedFilters=+remove_comments"
             )
         url = "%s%s" % (config.SECONDARY_SERVER, page)
-        resp, body = helpers.get_url(url, headers = headers)
+        resp, body = helpers.fetch(url, headers = headers)
         assert body.count('<!-- This comment should not be deleted -->') == 0
         assert body.count('  ') == 0
         assert resp.getheader("set-cookie").find(
@@ -61,7 +61,7 @@ class TestStickyOptionCookies:
                 "&PageSpeedFilters=+remove_comments"
             )
         url = "%s%s" % (config.SECONDARY_SERVER, page)
-        result = helpers.get_url(url, headers = headers)
+        result = helpers.fetch(url, headers = headers)
         return result.resp.getheader("set-cookie").split(";")[0]
 
     # Sticky option cookies: no token leaves option cookies untouched
@@ -72,7 +72,7 @@ class TestStickyOptionCookies:
             "Cookie" : "%s" % captured_cookie}
         page = "/mod_pagespeed_test/forbidden.html"
         url = "%s%s" % (config.SECONDARY_SERVER, page)
-        resp, body = helpers.get_url(url, headers = headers)
+        resp, body = helpers.fetch(url, headers = headers)
         assert body.count('<!-- This comment should not be deleted -->') == 0
         assert body.count('  ') == 0
         assert not resp.getheader("set-cookie")
@@ -90,7 +90,7 @@ class TestStickyOptionCookies:
         page = ("/mod_pagespeed_test/forbidden.html?"
                 "PageSpeedStickyQueryParameters=off")
         url = "%s%s" % (config.SECONDARY_SERVER, page)
-        resp, body = helpers.get_url(url, headers = headers)
+        resp, body = helpers.fetch(url, headers = headers)
         assert body.count('<!-- This comment should not be deleted -->') == 0
         assert body.count('  ') == 0
         assert resp.getheader("set-cookie").find(

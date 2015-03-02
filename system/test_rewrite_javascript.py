@@ -11,9 +11,10 @@ def test_rewrite_javascript_minifies_javascript_and_saves_bytes():
         config.EXAMPLE_ROOT)
     pattern = r'src=.*rewrite_javascript\.js\.pagespeed\.jm\.'
     # External scripts rewritten.
-    _resp, body = helpers.get_until_primary(
-        url, lambda _resp, body: len(re.findall(pattern, body)) == 2)
-
+    result, success = helpers.FetchUntil(url).waitFor(
+        helpers.patternCountEquals, pattern, 2)
+    assert success, result.body
+    body = result.body
     results = re.findall(r'".*.pagespeed.jm[^"]*', body)
     results = [x[1:] for x in results]
     # If PreserveUrlRelativity is on, we need to find the relative URL and
@@ -28,7 +29,7 @@ def test_rewrite_javascript_minifies_javascript_and_saves_bytes():
 
     for result in results:
         print result
-        js_resp, js_body = helpers.get_url(result)
+        js_resp, js_body = helpers.fetch(result)
         assert js_body.count("removed") == 0  # No comments should remain.
         # Rewritten JS is cache-extended.
         assert js_resp.getheader("cache-control") == "max-age=31536000"
@@ -42,9 +43,11 @@ def test_rewrite_javascript_external():
     url = ("%s/rewrite_javascript.html?PageSpeedFilters="
         "rewrite_javascript_external" % config.EXAMPLE_ROOT)
     pattern = r'src=.*rewrite_javascript\.js\.pagespeed\.jm\.'
-    _resp, body = helpers.get_until_primary(
-        url, lambda _resp, body: len(re.findall(pattern, body)) == 2)
-    assert body.count("// This comment will be removed") > 0
+
+    result, success = helpers.FetchUntil(url).waitFor(
+        helpers.patternCountEquals, pattern, 2)
+    assert success, result.body
+    assert result.body.count("// This comment will be removed") > 0
 
 
 def test_rewrite_javascript_inline():
@@ -52,8 +55,8 @@ def test_rewrite_javascript_inline():
         "rewrite_javascript_inline" % config.EXAMPLE_ROOT)
     # We test with blocking rewrites here because we are trying to prove
     # we will never rewrite the external JS, which is impractical to do
-    # with fetch_until.
-    _resp, body = helpers.get_primary(url,
+    # with FetchUntil.
+    _resp, body = helpers.fetch(url,
         {"X-PSA-Blocking-Rewrite": "psatest"})
     # Checks that the inline JS block was minified.
     assert body.count("// This comment will be removed") == 0
@@ -69,7 +72,7 @@ def test_rewrite_javascript_inline():
 
 def test_regression_test_for_RewriteDriver_leak():
     url = "%s/_.pagespeed.jo.3tPymVdi9b.js" % config.TEST_ROOT
-    result = helpers.get_primary(url)
+    result = helpers.fetch(url, allow_error_responses = True)
     # TODO(oschaaf): check
     assert result.resp.status == 404
 
@@ -80,7 +83,8 @@ def test_regression_test_for_RewriteDriver_leak():
 def test_regression_test_with_same_filtered_input_twice_in_combination():
     url = ("%s/_,Mco.0.css+_,Mco.0.css.pagespeed.cc.0.css?PageSpeedFilters="
         "combine_css,outline_css" % config.TEST_ROOT)
-    result = helpers.get_primary(url, timeout=urllib3.Timeout(read=3.0))
+    result = helpers.fetch(url, timeout=urllib3.Timeout(read=3.0),
+        allow_error_responses = True)
     # TODO(oschaaf): test if we fail properly here.
     # We want status code 8 (server-issued error) and not 4
     # (network failure/timeout)

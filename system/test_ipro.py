@@ -7,7 +7,6 @@ import test_helpers as helpers
 # rewritten.  That's not what this is trying to test, so we use
 # ?PageSpeed=off.
 
-
 def test_in_place_resource_optimization():
     # Note: we intentionally want to use an image which will not appear on
     # any HTML pages, and thus will not be in cache before this test is run.
@@ -22,21 +21,22 @@ def test_in_place_resource_optimization():
 
     # Check that we compress the image (with IPRO).
     # Note: This requests $URL until it's size is less than $THRESHOLD_SIZE.
-    resp, body = helpers.get_until_primary(
-        url,
-        lambda _resp, content: len(content) < threshold_size,
-        headers = {"X-PSA-Blocking-Rewrite": "psatest"})
+    headers = {"X-PSA-Blocking-Rewrite": "psatest"}
+
+    f = lambda r: len(r.body) < threshold_size
+    result, success = helpers.FetchUntil(url, headers = headers).waitFor(f)
+    assert success
 
     # TODO(oschaaf): The original tests also looks on the disk to check the
     # fetched file. Double check why.
 
     # Check that resource is served with small Cache-Control header (since
     # we cannot cache-extend resources served under the original URL).
-    cc = resp.getheader("cache-control")
+    cc = result.resp.getheader("cache-control")
     assert cc
     int_cc = int(cc.replace("max-age=", ""))
     assert int_cc < 1000
 
     # Check that the original image is greater than threshold to begin with.
-    resp, body = helpers.get_primary("%s?PageSpeed=off" % url)
+    resp, body = helpers.fetch("%s?PageSpeed=off" % url)
     assert len(body) > threshold_size

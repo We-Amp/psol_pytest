@@ -7,7 +7,7 @@ import test_helpers as helpers
 def test_initial_header():
     # TODO(oschaaf): branding, etc
     # TODO(oschaaf): split this up in separate tests?
-    resp, _body = helpers.get_primary(
+    resp, _body = helpers.fetch(
         "%s/combine_css.html" %
         config.EXAMPLE_ROOT)
 
@@ -45,7 +45,7 @@ def test_initial_header():
 
 def test_pagespeed_added_with_pagespeed_on():
     print "X-Mod-Pagespeed header added when PageSpeed=on"
-    resp, _body = helpers.get_primary(
+    resp, _body = helpers.fetch(
         "%s/combine_css.html?PageSpeed=on" %
         config.EXAMPLE_ROOT)
     assert(resp.getheader("x-mod-pagespeed")
@@ -54,7 +54,7 @@ def test_pagespeed_added_with_pagespeed_on():
 
 def test_pagespeed_not_added_with_pagespeed_off():
     print "X-Mod-Pagespeed header not added when PageSpeed=off"
-    resp, _body = helpers.get_primary(
+    resp, _body = helpers.fetch(
         "%s/combine_css.html?PageSpeed=off" %
         config.EXAMPLE_ROOT)
     assert(not resp.getheader("x-mod-pagespeed")

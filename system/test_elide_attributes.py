@@ -5,4 +5,4 @@ def test_elide_attributes_removes_boolean_and_default_attributes():
     filter_name = "elide_attributes"
     url = "%s/%s.html?PageSpeedFilters=%s" % (
         config.EXAMPLE_ROOT, filter_name, filter_name)
-    assert helpers.get_primary(url).body.count("disabled=") == 0
+    assert helpers.fetch(url).body.count("disabled=") == 0

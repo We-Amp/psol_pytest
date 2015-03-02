@@ -1,3 +1,7 @@
+import logging
+
+import pytest
+
 ############################### test args      ################################
 NGX_BINARY = "/home/oschaaf/Code/google/ngxps-ttpr/testing/sbin/nginx"
 MPS_DIRECTORY = "/home/oschaaf/Code/google/ngxps-ttpr/mod_pagespeed"
@@ -7,8 +11,7 @@ SECONDARY_HOST = "localhost"
 SECONDARY_PORT = 8051
 PRIMARY_SERVER = "http://%s:%s" % (PRIMARY_HOST, PRIMARY_PORT)
 SECONDARY_SERVER = "http://%s:%s" % (SECONDARY_HOST, SECONDARY_PORT)
-CONFIGURATION = ("/home/oschaaf/Code/google/ngxps-ttpr/ngx_pagespeed/test/tmp/"
-    "pagespeed_test.conf")
+TEST_TMP_DIR = "/home/oschaaf/Code/google/ngxps-ttpr/ngx_pagespeed/test/tmp"
 EXAMPLE_ROOT = "/mod_pagespeed_example"
 # TODO(oschaaf): CHECK
 REWRITTEN_ROOT = "/mod_pagespeed_example"
@@ -25,4 +28,20 @@ PROXY_DOMAIN = "%s:%s" % (PRIMARY_HOST, PRIMARY_PORT)
 PSA_JS_LIBRARY_URL_PREFIX = "pagespeed_custom_static"
 REWRITTEN_TEST_ROOT = TEST_ROOT
 
-LOG_ROOT="/tmp/mod_pagespeed_test.oschaaf/"
+LOG_ROOT=TEST_TMP_DIR
+
+
+logging.basicConfig(
+    format = '%(asctime)s %(message)s',
+    filename = ('%s/pytest_psol.log' % TEST_TMP_DIR),
+    level = logging.DEBUG,
+    filemode = "w")
+
+log = logging.getLogger("psol")
+
+#requests_log = logging.getLogger("urllib3")
+#requests_log = logging.getLogger("requests.packages.urllib3")
+#requests_log.setLevel(logging.DEBUG)
+#requests_log.propagate = True
+#requests_log.filename = '%s/pytest_urllib3.log' % TEST_TMP_DIR
+
