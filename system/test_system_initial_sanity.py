@@ -24,7 +24,4 @@ def test_compression_enabled_for_html():
 
 
 def test_whitespace_served_as_html_behaves_sanely():
-    resp, _body = helpers.fetch(
-        "%s/whitespace.html" %
-        config.TEST_ROOT)
-    assert resp.status == 200
+    helpers.fetch("%s/whitespace.html" % config.TEST_ROOT)

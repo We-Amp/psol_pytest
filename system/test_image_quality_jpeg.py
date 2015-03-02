@@ -37,6 +37,5 @@ def test_quality_of_jpeg_output_images():
     # that image_rewrite_filter.cc decided it was a good idea to convert to
     # progressive jpeg, and in this case it's not.  See the not above on
     # kJpegPixelToByteRatio.
-    assert image_resp.status == 200
     assert image_resp.getheader("content-type") == "image/jpeg"
     assert len(image_body) <= 7564   # resized

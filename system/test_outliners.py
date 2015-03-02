@@ -38,7 +38,6 @@ def test_compression_is_enabled_for_rewritten_js():
     print "js_url: %s" % js_url
 
     js_resp, _js_body = helpers.fetch(js_url, {"Accept-Encoding": "gzip"})
-    assert js_resp.status == 200
     assert js_resp.getheader("content-encoding") == "gzip"
     # check_from "$JS_HEADERS" fgrep -qi 'Vary: Accept-Encoding'
     assert js_resp.getheader("etag") in ['W/"0"', 'W/"0-gzip"']

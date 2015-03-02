@@ -26,7 +26,6 @@ def test_fetch_large_css_combine_url():
         % (config.REWRITTEN_ROOT, rep, rep, rep, rep, rep, rep, rep))
 
     resp, body = helpers.fetch(url)
-    assert resp.status == 200
     assert len(body.splitlines()) > 900
 
 

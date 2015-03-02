@@ -66,7 +66,6 @@ def test_size_of_rewritten_image():
     # ,which would translate to a lot of very small functions
     print resp_img1.getheaders()
 
-    assert resp_img1.status == 200
     # Make sure we have some valid headers.
     assert resp_img1.getheader("content-type").lower() == "image/jpeg"
     # Make sure the response was not gzipped.

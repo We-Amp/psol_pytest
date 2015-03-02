@@ -21,8 +21,6 @@ def inspect_via_debug_filter(url, filter_code, headers = None):
     # normalize line endings
     body = body.replace("\r","")
 
-    assert resp.status == 200
-
     # debug filter emits the enabled filters
     pattern = r'Filters:\n(.*?)\n\n'
     match = re.search(pattern, body, re.DOTALL)
@@ -42,7 +40,6 @@ def inspect_via_rewriting(url, filter_name, headers = None):
         (config.EXAMPLE_ROOT, filter_name))
     passthrough_resp, passthrough_body = helpers.fetch(url_passthrough)
 
-    assert passthrough_resp.status == 200
     # No debug filter enabled
     assert passthrough_body.count("#NumFlushes") == 0
 

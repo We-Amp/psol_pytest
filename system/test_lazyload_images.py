@@ -38,8 +38,6 @@ def test_lazyload_images_optimize_mode():
         (config.PROXY_DOMAIN, config.PSA_JS_LIBRARY_URL_PREFIX, blank_gif_src)
 
     resp, body = helpers.fetch(proxy_url)
-
-    assert resp.status == 200
     assert resp.getheader("cache-control") == "max-age=31536000"
 
 # Checks that lazyload_images,debug injects non-optimized javascript from

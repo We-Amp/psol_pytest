@@ -24,7 +24,6 @@ class TestSignedUrls:
 
         match = re.search(url_regex, body, re.MULTILINE)
         assert match
-        assert resp.status == 200
         resource_url = match.group(0)
         return resource_url
 

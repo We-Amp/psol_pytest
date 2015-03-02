@@ -44,7 +44,6 @@ def test_defer_javascript_debug_optimize_mode():
         config.PROXY_DOMAIN, config.PSA_JS_LIBRARY_URL_PREFIX,
         js_defer_leaf)
     resp, _body = helpers.fetch(js_defer_url)
-    assert resp.status == 200
     assert resp.getheader("cache-control") == "max-age=31536000"
 
 
@@ -61,7 +60,6 @@ def test_serve_js_defer_0_js():
     url = ("http://%s/%s/js_defer.0.js" %
         (config.PROXY_DOMAIN, config.PSA_JS_LIBRARY_URL_PREFIX))
     resp, _body = helpers.fetch(url)
-    assert resp.status == 200
     assert resp.getheader("cache-control") == "max-age=300,private"
 
 
@@ -70,5 +68,4 @@ def test_serve_js_defer_debug_0_js():
     url = ("http://%s/%s/js_defer_debug.0.js" %
         (config.PROXY_DOMAIN, config.PSA_JS_LIBRARY_URL_PREFIX))
     resp, _body = helpers.fetch(url)
-    assert resp.status == 200
     assert resp.getheader("cache-control") == "max-age=300,private"

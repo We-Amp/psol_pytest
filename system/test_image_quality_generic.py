@@ -40,6 +40,5 @@ def test_quality_of_jpeg_output_images_with_generic_quality_flag():
     # get progressive jpeg conversion turned on in this testcase, which makes
     # the output larger.  The threshold factor kJpegPixelToByteRatio in
     # image_rewrite_filter.cc is tuned to avoid that.
-    assert image_resp.status == 200
     assert image_resp.getheader("content-type") == "image/jpeg"
     assert len(image_body) <= 8157   # resized

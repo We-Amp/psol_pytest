@@ -61,6 +61,7 @@ def fetch(
 
     # If a relative path was specified, absolutify it assuming this is a request
     # for the primary test host.
+    # TODO(oschaaf): clean up host handling mess
     if not url.startswith("http"):
         if "Host" in headers:
             assert 0

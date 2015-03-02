@@ -33,7 +33,7 @@ def test_cache_extended_image_should_respond_304_to_an_if_modified_since():
 def test_legacy_format_urls_should_still_work():
     url = ("%s/images/ce.0123456789abcdef0123456789abcdef.Puzzle,j.jpg" %
         config.REWRITTEN_ROOT)
-    assert helpers.fetch(url).resp.status == 200
+    helpers.fetch(url)
 
 # Cache extend PDFs.
 

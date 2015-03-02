@@ -41,12 +41,10 @@ def test_quality_of_webp_output_images():
     # that image_rewrite_filter.cc decided it was a good idea to convert to
     # progressive jpeg, and in this case it's not.  See the not above on
     # kJpegPixelToByteRatio.
-    assert image_resp.status == 200
     assert image_resp.getheader("content-type") == "image/webp"
     assert len(image_body) <= 5140   # resized
 
     # TODO(oschaaf): original test repeats the FetchUntil on the html (?!)
     image_resp, image_body = helpers.fetch(results[0], headers)
-    assert image_resp.status == 200
     assert image_resp.getheader("content-type") == "image/webp"
     assert len(image_body) <= 5140   # resized
