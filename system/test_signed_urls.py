@@ -5,7 +5,7 @@ import pytest
 import config
 import test_helpers as helpers
 
-skip = "not config.SECONDARY_HOST"
+skip = "not config.SECONDARY_SERVER"
 combined_css = ".yellow{background-color:#ff0}"
 url_regex = r'http:\/\/[^ ]+css\.pagespeed[^ ]+\.css'
 url_path = "/mod_pagespeed_test/unauthorized/inline_css.html"

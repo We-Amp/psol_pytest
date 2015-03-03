@@ -1,18 +1,18 @@
 from collections import namedtuple
 from copy import copy
-import errno
-from itertools import count
+import itertools
 import re
 from socket import error as socket_error
 import time
 import urllib3
+from urlparse import urljoin
 from wsgiref.handlers import format_date_time
 
 import config
 from config import log
 
 FetchResult = namedtuple('FetchResult', 'resp body')
-fetch_count = count()
+fetch_count = itertools.count()
 
 def patternCountEquals(self, pattern, count):
     return len(re.findall(pattern, self.body)) == count
@@ -20,6 +20,9 @@ def patternCountEquals(self, pattern, count):
 def stringCountEquals(self, substring, count):
     return self.body.count(substring) == count
 
+
+# Wrapper around the fetch generator, providing convenience methods like
+# waitFor()
 class FetchUntil:
     def __init__(self, url, *args, **kwargs):
         self.it = fetch_generator(url, *args, **kwargs)
@@ -46,9 +49,10 @@ class FetchUntil:
 
         return res, False
 
-# Relative url will be absolutified to the given host in the request headers --
-# or the primary test host if none existed.
-# TODO(oschaaf): consider passing on kwargs to http.request()?
+# Relative url will be absolutified to the first match of:
+# 1. The host header
+# 2. The given proxy
+# 3. The primary test host
 def fetch(
     url, headers = None, timeout = None, proxy = "",
     method = "GET", allow_error_responses = False):
@@ -59,8 +63,8 @@ def fetch(
         headers["User-Agent"] = config.DEFAULT_USER_AGENT
 
 
-    if proxy:
-        assert headers["Host"]
+    #if proxy:
+    #    assert headers["Host"]
 
     # If a relative path was specified, absolutify it assuming this is a request
     # for the primary test host.
@@ -85,7 +89,7 @@ def fetch(
             fetch_method = urllib3.PoolManager().request
 
         resp = fetch_method(method, url, headers = headers, timeout = timeout,
-            retries = False)
+            retries = False, redirect = False)
     except:
         log.debug("[%d]: fetch_url excepted", mycount)
         raise
@@ -109,8 +113,8 @@ def fetch_generator(url, *args, **kwargs):
         yield res
         ok = time.time() < timeout_seconds
         if ok:
-            time.sleep(0.1) # Max fetch rate is 10/s
-    log.debug("Generated fetches for maximum timespan")
+            time.sleep(0.2)
+    log.debug("Fetch generator timed out")
 
 
 # Transform the passed in date into a formatted string usable in
@@ -119,4 +123,6 @@ def http_date(d):
     stamp = time.mktime(d.timetuple())
     return format_date_time(stamp)
 
+def absolutify_url(base_url, relative_url):
+    return urljoin(base_url, relative_url)
 

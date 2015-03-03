@@ -4,7 +4,7 @@ import config
 import test_helpers as helpers
 
 
-skip = "not config.SECONDARY_HOST"
+skip = "not config.SECONDARY_SERVER"
 # TODO(oschaaf): original tests use generate_url() call!
 proxy = config.SECONDARY_SERVER
 

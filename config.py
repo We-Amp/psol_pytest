@@ -5,31 +5,29 @@ import os
 import pytest
 
 ############################### test args      ################################
-NGX_BINARY = "/home/oschaaf/Code/google/ngxps-ttpr/testing/sbin/nginx"
-MPS_DIRECTORY = "/home/oschaaf/Code/google/ngxps-ttpr/mod_pagespeed"
-PRIMARY_HOST = "localhost"
-PRIMARY_PORT = 8050
-SECONDARY_HOST = "localhost"
-SECONDARY_PORT = 8051
-PRIMARY_SERVER = "http://%s:%s" % (PRIMARY_HOST, PRIMARY_PORT)
-SECONDARY_SERVER = "http://%s:%s" % (SECONDARY_HOST, SECONDARY_PORT)
 TEST_TMP_DIR = "/home/oschaaf/Code/google/ngxps-ttpr/ngx_pagespeed/test/tmp"
 EXAMPLE_ROOT = "/mod_pagespeed_example"
-# TODO(oschaaf): CHECK
-REWRITTEN_ROOT = "/mod_pagespeed_example"
 TEST_ROOT = "/mod_pagespeed_test"
-SINGLE_SERVER_INSTANCE = False
-BAD_RESOURCE_URL = "/mod_pagespeed/W.bad.pagespeed.cf.hash.css"
+
+PRIMARY_SERVER = "http://localhost:8050"
+SECONDARY_SERVER = "http://localhost:8051"
+
 DEFAULT_USER_AGENT = ("Mozilla/5.0 (X11; U; Linux x86_64; en-US) "
     "AppleWebKit/534.0 (KHTML, like Gecko) Chrome/6.0.408.1 Safari/534.0")
 
+# TODO(oschaaf): check
 HTTPS_HOST = ""  # SECONDARY_HOST
 HTTPS_EXAMPLE_ROOT = "http://%s/mod_pagespeed_example" % HTTPS_HOST
 
-PROXY_DOMAIN = "%s:%s" % (PRIMARY_HOST, PRIMARY_PORT)
+# TODO(oschaaf): seems almost unused at first glance:
+PROXY_DOMAIN = "localhost:8050"
 PSA_JS_LIBRARY_URL_PREFIX = "pagespeed_custom_static"
+
+# TODO(oschaaf): seems almost unused at first glance:
+REWRITTEN_ROOT = EXAMPLE_ROOT
 REWRITTEN_TEST_ROOT = TEST_ROOT
 
+# Test will dump its log(s) here:
 LOG_ROOT=TEST_TMP_DIR
 
 

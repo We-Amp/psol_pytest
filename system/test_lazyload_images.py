@@ -3,9 +3,6 @@ import re
 import config
 import test_helpers as helpers
 
-
-
-
 def test_lazyload_images():
     url = ("%s/lazyload_images.html?PageSpeedFilters=lazyload_images" %
         config.EXAMPLE_ROOT)
@@ -43,8 +40,6 @@ def test_lazyload_images_optimize_mode():
 # Checks that lazyload_images,debug injects non-optimized javascript from
 # lazyload_images.js. The debug JS will still have comments stripped, since we
 # run it through the closure compiler to resolve any uses of goog.require.
-
-
 def test_lazyload_images_debug_mode():
     url = ("%s/lazyload_images.html?PageSpeedFilters=lazyload_images,debug" %
         config.EXAMPLE_ROOT)

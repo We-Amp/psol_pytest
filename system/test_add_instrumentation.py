@@ -1,6 +1,7 @@
 import config
 import test_helpers as helpers
 
+BAD_RESOURCE_URL = "/mod_pagespeed/W.bad.pagespeed.cf.hash.css"
 
 def test_add_instrumentation_adds_two_script_tags():
     filter_name = "add_instrumentation"
@@ -19,8 +20,8 @@ def test_make_sure_404s_are_not_rewritten():
     # Note: We run this in the add_instrumentation section because that is the
     # easiest to detect which changes every page
     # TODO(oschaaf): XXX
-    bad_url = ("%s?PageSpeedFilters=add_instrumentation"
-     % config.BAD_RESOURCE_URL)
+
+    bad_url = ("%s?PageSpeedFilters=add_instrumentation" % BAD_RESOURCE_URL)
     result = helpers.fetch(bad_url, allow_error_responses = True)
     expect = "/mod_pagespeed_beacon"
     assert helpers.stringCountEquals(result, expect, 0), result.body
