@@ -27,18 +27,12 @@ def test_rewrite_css_sprite_images_sprites_images_in_css():
     # above (see -save and definition of FetchUntil).  Fetch that CSS
     # file and look inside for the sprited image reference (ic.pagespeed.is...).
     results = re.findall(
-        r'styles/A\.sprite_images\.css\.pagespeed\.cf\..*\.css',
+        r'[^"]*styles/A\.sprite_images\.css\.pagespeed\.cf\..*\.css',
         result.body)
 
     # If PreserveUrlRelativity is on, we need to find the relative URL and
     # absolutify it ourselves.
-    results = [
-        x if x.count("http://") == 1 else (
-            "http://%s:%s%s/%s" %
-            (config.PRIMARY_HOST,
-             config.PRIMARY_PORT,
-             config.EXAMPLE_ROOT,
-             x)) for x in results]
+    results = [helpers.absolutify_url(url, u) for u in results]
 
     assert len(results) == 1
     css_url = results[0]

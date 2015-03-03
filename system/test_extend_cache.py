@@ -70,12 +70,9 @@ def test_cache_extended_pdfs_load_and_have_the_right_mime_type():
         # If PreserveUrlRelativity is on, we need to find the relative URL and
         # absolutify it ourselves.
         results = re.findall(r'[^\"]*pagespeed.[^\"]*\.pdf', body)
-        ce_url_prepend = config.EXAMPLE_ROOT
+        results = [helpers.absolutify_url(url, u) for u in results]
 
     assert len(results) > 0
 
-    ce_url = "%s/%s" % (ce_url_prepend, results[1])
-    print "Extracted cache-extended url: %s" % ce_url
-
-    resp, body = helpers.fetch(ce_url)
+    resp, body = helpers.fetch(results[1])
     assert resp.getheader("content-type") == "application/pdf"

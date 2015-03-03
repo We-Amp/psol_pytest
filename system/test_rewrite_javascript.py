@@ -19,13 +19,8 @@ def test_rewrite_javascript_minifies_javascript_and_saves_bytes():
     results = [x[1:] for x in results]
     # If PreserveUrlRelativity is on, we need to find the relative URL and
     # absolutify it ourselves.
-    results = [
-        x if x.count("http://") == 1 else (
-            "http://%s:%s%s/%s" %
-            (config.PRIMARY_HOST,
-             config.PRIMARY_PORT,
-             config.EXAMPLE_ROOT,
-             x)) for x in results]
+    results = [helpers.absolutify_url(url, u) for u in results]
+
 
     for result in results:
         print result

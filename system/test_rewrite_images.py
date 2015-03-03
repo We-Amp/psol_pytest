@@ -47,13 +47,8 @@ def test_size_of_rewritten_image():
 
     # If PreserveUrlRelativity is on, we need to find the relative URL and
     # absolutify it ourselves.
-    results = [
-        x if x.count("http://") == 1 else (
-            "http://%s:%s%s/%s" %
-            (config.PRIMARY_HOST,
-             config.PRIMARY_PORT,
-             config.EXAMPLE_ROOT,
-             x)) for x in results]
+    results = [helpers.absolutify_url(url, u) for u in results]
+
 
     assert len(results) == 2
     _resp_img0, body_img0 = helpers.fetch(results[0])
