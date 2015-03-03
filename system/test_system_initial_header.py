@@ -5,8 +5,6 @@ import test_helpers as helpers
 ############################### tests #########################################
 
 def test_initial_header():
-    # TODO(oschaaf): branding, etc
-    # TODO(oschaaf): split this up in separate tests?
     resp, _body = helpers.fetch(
         "%s/combine_css.html" %
         config.EXAMPLE_ROOT)

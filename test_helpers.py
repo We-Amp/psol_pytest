@@ -49,7 +49,10 @@ class FetchUntil:
 
         return res, False
 
-# Relative url will be absolutified to the first match of:
+# Fetch the given url. config.DEFAULT_USER_AGENT will be used if no User-Agent
+# request header is specified.
+# Will assert on receiving error responses, unless allow_error_responses is set.
+# Relative urls will be absolutified to the first match of:
 # 1. The host header
 # 2. The given proxy
 # 3. The primary test host
@@ -62,13 +65,6 @@ def fetch(
     if not "User-Agent" in headers:
         headers["User-Agent"] = config.DEFAULT_USER_AGENT
 
-
-    #if proxy:
-    #    assert headers["Host"]
-
-    # If a relative path was specified, absolutify it assuming this is a request
-    # for the primary test host.
-    # TODO(oschaaf): clean up host handling mess
     if not url.startswith("http"):
         if "Host" in headers:
             url = "http://%s%s" % (headers["Host"], url)
@@ -105,7 +101,6 @@ def fetch(
 
 # Yields fetches for a fixed period, passing on args/kwargs to fetch.
 def fetch_generator(url, *args, **kwargs):
-    # __tracebackhide__ = True
     timeout_seconds = time.time() + 5
     ok = True
     while ok:

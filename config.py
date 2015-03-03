@@ -28,16 +28,15 @@ REWRITTEN_TEST_ROOT = TEST_ROOT
 
 # Test will dump its log(s) here:
 LOG_ROOT=TEST_TMP_DIR
-
+DISABLE_FONT_API_TESTS = False
 
 logging.basicConfig(
     format = '%(asctime)s %(message)s',
-    filename = ('%s/pytest_psol.log' % TEST_TMP_DIR),
+    filename = '%s/pytest_psol.log' % TEST_TMP_DIR,
     level = logging.DEBUG,
     filemode = "w")
 
 log = logging.getLogger("psol")
-
 
 # Override all the module variables above from the environment (if specified)
 # TODO(oschaaf): only allow overriding things that make sense
@@ -54,9 +53,4 @@ for name in candidates:
         print "%s:%s (default)" % (name, globals()[name])
 
 
-#requests_log = logging.getLogger("urllib3")
-#requests_log = logging.getLogger("requests.packages.urllib3")
-#requests_log.setLevel(logging.DEBUG)
-#requests_log.propagate = True
-#requests_log.filename = '%s/pytest_urllib3.log' % TEST_TMP_DIR
 

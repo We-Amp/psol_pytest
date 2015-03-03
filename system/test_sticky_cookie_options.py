@@ -3,7 +3,6 @@ import pytest
 import config
 import test_helpers as helpers
 
-# TODO(oschaaf): original tests use generate_url() call!
 proxy = config.SECONDARY_SERVER
 
 @pytest.mark.skipif("not proxy")
@@ -16,7 +15,6 @@ class TestStickyOptionCookies:
         resp, body = helpers.fetch(url, headers = headers, proxy = proxy)
         assert body.count('<!-- This comment should not be deleted -->')
         assert body.count('  ') == 0
-        # TODO(oschaaf):
         assert body.count('Cookie') == 0
         assert ("%s" % resp.getheaders()).count("cookie") == 0
 
@@ -47,13 +45,13 @@ class TestStickyOptionCookies:
         assert body.count('  ') == 0
         assert resp.getheader("set-cookie").find(
             "PageSpeedFilters=%2bremove_comments;") == 0
-        # We know we got the right cookie, now check that we got the right number.
-        # Multiple values will be joined with "," - but we already have on for
-        # the cookie date.
+        # We know we got the right cookie, now check that we got the right
+        # number. Multiple values will be joined with "," - but we already have
+        # on for the cookie date.
         assert resp.getheader("set-cookie").count(",") == 1
 
-    # test_sticky_option_cookies_right_token_is_adhesive will test that we receive a
-    # single cookie. Note that this helper works under that assumption.
+    # test_sticky_option_cookies_right_token_is_adhesive will test that we
+    # receive a single cookie. Note that this helper works under that assumption
     def capture_cookie(self):
         headers = {"Host": "options-by-cookies-enabled.example.com"}
         page = ("/mod_pagespeed_test/forbidden.html"

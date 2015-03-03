@@ -23,12 +23,12 @@ def test_in_place_resource_optimization():
     # Note: This requests $URL until it's size is less than $THRESHOLD_SIZE.
     headers = {"X-PSA-Blocking-Rewrite": "psatest"}
 
-    f = lambda r: len(r.body) < threshold_size
-    result, success = helpers.FetchUntil(url, headers = headers).waitFor(f)
-    assert success
+    result, success = helpers.FetchUntil(url, headers = headers
+        ).waitFor(lambda r: len(r.body) < threshold_size)
+    assert success, result.body
 
     # TODO(oschaaf): The original tests also looks on the disk to check the
-    # fetched file. Double check why.
+    # fetched file. What does that add?
 
     # Check that resource is served with small Cache-Control header (since
     # we cannot cache-extend resources served under the original URL).
@@ -38,5 +38,5 @@ def test_in_place_resource_optimization():
     assert int_cc < 1000
 
     # Check that the original image is greater than threshold to begin with.
-    resp, body = helpers.fetch("%s?PageSpeed=off" % url)
+    _resp, body = helpers.fetch("%s?PageSpeed=off" % url)
     assert len(body) > threshold_size

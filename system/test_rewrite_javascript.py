@@ -1,5 +1,4 @@
 import re
-# TODO(oschaaf): dependency
 import urllib3
 
 import config
@@ -61,26 +60,22 @@ def test_rewrite_javascript_inline():
     pattern = r'src=.*rewrite_javascript\.js\.pagespeed\.jm\.'
     assert len(re.findall(pattern, body)) == 0
 
+
 # Error path for fetch of outlined resources that are not in cache leaked
 # at one point of development.
-
-
 def test_regression_test_for_RewriteDriver_leak():
     url = "%s/_.pagespeed.jo.3tPymVdi9b.js" % config.TEST_ROOT
     result = helpers.fetch(url, allow_error_responses = True)
-    # TODO(oschaaf): check
     assert result.resp.status == 404
 
 # Combination rewrite in which the same URL occurred twice used to
 # lead to a large delay due to overly late lock release.
-
-
 def test_regression_test_with_same_filtered_input_twice_in_combination():
     url = ("%s/_,Mco.0.css+_,Mco.0.css.pagespeed.cc.0.css?PageSpeedFilters="
         "combine_css,outline_css" % config.TEST_ROOT)
-    result = helpers.fetch(url, timeout=urllib3.Timeout(read=3.0),
-        allow_error_responses = True)
-    # TODO(oschaaf): test if we fail properly here.
-    # We want status code 8 (server-issued error) and not 4
-    # (network failure/timeout)
-    assert result.resp.status == 404
+    try:
+        result = helpers.fetch(url, timeout=urllib3.Timeout(read=3),
+            allow_error_responses = True)
+        assert result.resp.status == 404
+    except urllib3.exceptions.ReadTimeoutError as ex:
+        assert 0, ex

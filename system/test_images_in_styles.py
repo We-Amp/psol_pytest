@@ -15,9 +15,6 @@ def test_rewrite_images_rewrite_css_rewrite_style_attributes_with_url():
         helpers.stringCountEquals, "BikeCrashIcn.png.pagespeed.ic.", 1)
     assert success, result.body
 
-    # TODO(oschaaf):?
-    # check run_wget_with_args $URL
-
 # Now check that it can handle two of the same image in the same style block:
 def test_two_images_in_the_same_style_block():
     page = ("rewrite_style_attributes_dual.html?PageSpeedFilters="
@@ -28,7 +25,3 @@ def test_two_images_in_the_same_style_block():
     result, success = helpers.FetchUntil(url).waitFor(
         helpers.patternCountEquals, pattern, 1)
     assert success, result.body
-
-
-    # TODO(oschaaf):?
-    # check run_wget_with_args $URL

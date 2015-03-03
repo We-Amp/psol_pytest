@@ -13,6 +13,3 @@ def test_rewrite_css_rewrite_images_rewrites_and_inlines_images_in_css():
         helpers.stringCountEquals, "data:image/png;base64", 1)
     assert success, result.body
     assert result.body.count("rewrite_css_images.css.pagespeed.cf.") == 1
-
-    # TODO(oschaaf):?
-    # check run_wget_with_args $URL

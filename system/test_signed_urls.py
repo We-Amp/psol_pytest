@@ -20,7 +20,7 @@ class TestSignedUrls:
             page_url, headers = headers, proxy = proxy).waitFor(
             helpers.stringCountEquals, "all_styles.css.pagespeed.cf", 1)
         assert success, result.body
-        resp, body = result
+        _resp, body = result
 
         match = re.search(url_regex, body, re.MULTILINE)
         assert match
@@ -42,7 +42,7 @@ class TestSignedUrls:
         resource_url = self.get_resource_url(headers)
         # Replace valid signature with an invalid one
         invalid_url = "%sAAAAAAAAAA.css" % resource_url[:-14]
-        resp, body = helpers.fetch(invalid_url, headers = headers,
+        resp, _body = helpers.fetch(invalid_url, headers = headers,
             proxy = proxy, allow_error_responses = True)
         assert resp.status == 404 or resp.status == 403
 
@@ -51,7 +51,7 @@ class TestSignedUrls:
         resource_url = self.get_resource_url(headers)
         # Remove signature
         invalid_url = "%s.css" % resource_url[:-14]
-        resp, body = helpers.fetch(invalid_url, headers = headers,
+        resp, _body = helpers.fetch(invalid_url, headers = headers,
             proxy = proxy, allow_error_responses = True)
         assert resp.status == 404 or resp.status == 403
 

@@ -9,7 +9,6 @@ def test_rewrite_images_inlines_compresses_and_resizes():
     url = ("%s/rewrite_images.html?PageSpeedFilters=rewrite_images" %
         config.EXAMPLE_ROOT)
 
-    # TODO(oschaaf): FetchUntil and blocking rewrite??
     # Images inlined.
     result, success = helpers.FetchUntil(url).waitFor(
         helpers.stringCountEquals, "data:image/png", 1)
@@ -56,10 +55,6 @@ def test_size_of_rewritten_image():
 
     assert len(body_img0) < 25000  # re-encoded
     assert len(body_img1) < 24126  # resized
-
-    # TODO(oschaaf): Used to "start_test headers for rewritten image" and others
-    # ,which would translate to a lot of very small functions
-    print resp_img1.getheaders()
 
     # Make sure we have some valid headers.
     assert resp_img1.getheader("content-type").lower() == "image/jpeg"

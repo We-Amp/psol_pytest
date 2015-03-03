@@ -65,7 +65,7 @@ def test_cache_extended_pdfs_load_and_have_the_right_mime_type():
     body = result.body
 
     results = re.findall(r'http://[^\"]*pagespeed.[^\"]*\.pdf', body)
-    ce_url_prepend = ""
+
     if len(results) == 0:
         # If PreserveUrlRelativity is on, we need to find the relative URL and
         # absolutify it ourselves.

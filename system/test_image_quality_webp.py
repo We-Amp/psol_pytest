@@ -4,16 +4,12 @@ import config
 import test_helpers as helpers
 
 
-
-
-def test_quality_of_webp_output_images():
+def quality_of_webp_output_images(headers):
     url = ("%s/webp_rewriting/rewrite_images.html?PageSpeedFilters="
-        "convert_jpeg_to_webp,rewrite_images" % config.TEST_ROOT)
-    headers = {
-        "PageSpeedFilters": "rewrite_images",
-        "PageSpeedImageRecompressionQuality": "75",
-        "PageSpeedWebpRecompressionQuality": "65",
-        "User-Agent": "webp"}
+        "convert_jpeg_to_webp,rewrite_images"
+        "&PageSpeedImageRecompressionQuality=75"
+        "&PageSpeedWebpRecompressionQuality=65"
+        % config.TEST_ROOT)
 
     # 2 images optimized
     result, success = helpers.FetchUntil(url, headers = headers).waitFor(
@@ -36,7 +32,9 @@ def test_quality_of_webp_output_images():
     assert image_resp.getheader("content-type") == "image/webp"
     assert len(image_body) <= 5140   # resized
 
-    # TODO(oschaaf): original test repeats the FetchUntil on the html (?!)
-    image_resp, image_body = helpers.fetch(results[0], headers)
-    assert image_resp.getheader("content-type") == "image/webp"
-    assert len(image_body) <= 5140   # resized
+
+def test_quality_of_webp_output_images_user_agent_header():
+    quality_of_webp_output_images({"User-Agent": "webp"})
+
+def test_quality_of_webp_output_images_accept_header():
+    quality_of_webp_output_images({"Accept": "image/webp"})

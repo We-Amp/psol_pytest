@@ -10,10 +10,10 @@ filters = [
     ("collapse_whitespace","cw"),
     ("combine_css","cc"),
     ("combine_heads","ch"),
-    ]
+]
 
 def inspect_via_debug_filter(url, filter_code, headers = None):
-    resp, body = helpers.fetch(url, headers = headers)
+    _resp, body = helpers.fetch(url, headers = headers)
 
     # Debug filter enabled
     assert body.count("#NumFlushes") == 1
@@ -38,7 +38,7 @@ def inspect_via_rewriting(url, filter_name, headers = None):
     # difference.
     url_passthrough = ("%s/%s.html?PageSpeedFilters=" %
         (config.EXAMPLE_ROOT, filter_name))
-    passthrough_resp, passthrough_body = helpers.fetch(url_passthrough)
+    _passthrough_resp, passthrough_body = helpers.fetch(url_passthrough)
 
     # No debug filter enabled
     assert passthrough_body.count("#NumFlushes") == 0

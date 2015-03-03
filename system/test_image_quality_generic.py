@@ -20,7 +20,6 @@ def test_quality_of_jpeg_output_images_with_generic_quality_flag():
     # Sanity check, we should only have one result
     assert len(results) == 1
 
-    # TODO(oschaaf): make a helper to absolutify
     results = [helpers.absolutify_url(url, u) for u in results]
     image_resp, image_body = helpers.fetch(results[0], headers)
 

@@ -19,9 +19,8 @@ def test_we_dont_add_instrumentation_if_url_params_tell_us_not_to():
 def test_make_sure_404s_are_not_rewritten():
     # Note: We run this in the add_instrumentation section because that is the
     # easiest to detect which changes every page
-    # TODO(oschaaf): XXX
-
     bad_url = ("%s?PageSpeedFilters=add_instrumentation" % BAD_RESOURCE_URL)
     result = helpers.fetch(bad_url, allow_error_responses = True)
-    expect = "/mod_pagespeed_beacon"
-    assert helpers.stringCountEquals(result, expect, 0), result.body
+    assert result.resp.status == 404
+    body = result.body
+    assert helpers.stringCountEquals(result, "/mod_pagespeed_beacon", 0), body

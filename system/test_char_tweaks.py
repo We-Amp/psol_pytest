@@ -30,8 +30,7 @@ def test_remove_quotes_does_what_it_says_on_the_tin():
     url = ("%s/remove_quotes.html?PageSpeedFilters=remove_quotes" %
         config.EXAMPLE_ROOT)
     result = helpers.fetch(url)
-    # TODO(oschaaf): double check this test:
-    # 2 quoted attrs
+    # 4 quoted attrs
     assert len(re.findall(r'"', result.body, re.MULTILINE)) == 4
     assert result.body.count("'") == 0  # no apostrophes
 

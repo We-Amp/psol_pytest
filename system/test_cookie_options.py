@@ -3,7 +3,6 @@ import pytest
 import config
 import test_helpers as helpers
 
-# TODO(oschaaf): original tests use generate_url() call!
 proxy = config.SECONDARY_SERVER
 
 @pytest.mark.skipif("not proxy")
@@ -30,7 +29,8 @@ class TestCookieOptions:
 
     # Cookie options on: set option by cookie takes effect
     def test_setting_cookie_on_options_invalid_cookie_takes_no_effect(self):
-        # The '+' must be encoded as %2b for the cookie parsing code to accept it.
+        # The '+' must be encoded as %2b for the cookie parsing code to accept
+        # it.
         headers = {"Host": "options-by-cookies-enabled.example.com",
             "Cookie" : "PageSpeedFilters=+remove_comments"}
         page = "/mod_pagespeed_test/forbidden.html"

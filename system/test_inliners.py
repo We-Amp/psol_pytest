@@ -1,3 +1,5 @@
+import pytest
+
 import config
 import test_helpers as helpers
 
@@ -11,14 +13,13 @@ def test_inline_css_converts_3_out_of_5_link_tags_to_style_tags():
         helpers.stringCountEquals, "<style", 3)
     assert success, result.body
 
-
+# In some test environments these tests can't be run because of
+# restrictions on external connections
+@pytest.mark.skipif("config.DISABLE_FONT_API_TESTS")
 def test_inline_google_font_css_can_inline_google_font_api_loader_css():
     url = ("%s/inline_google_font_css.html?PageSpeedFilters="
         "inline_google_font_css" % config.EXAMPLE_ROOT)
 
-    # TODO(oschaaf): ->don't test in that case:
-    # In some test environments these tests can't be run because of
-    # restrictions on external connections
     userAgent = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/40.0.2214.45 Safari/537.36")
 

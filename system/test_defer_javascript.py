@@ -34,7 +34,6 @@ def test_defer_javascript_debug_optimize_mode():
 
     # The deferjs src url is in the format js_defer.<hash>.js. This strips out
     # everthing except the js filename and saves it to test fetching later.
-    # TODO(oschaaf): make sure that we need to capture the debug version
     match = re.search(r'src="/.*/(js_defer.*\.js)"', body)
     assert match
     js_defer_leaf = match.group(1)

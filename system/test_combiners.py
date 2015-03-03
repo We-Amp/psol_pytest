@@ -25,7 +25,7 @@ def test_fetch_large_css_combine_url():
         "bold.css.pagespeed.cc.46IlzLf_NK.css"
         % (config.REWRITTEN_ROOT, rep, rep, rep, rep, rep, rep, rep))
 
-    resp, body = helpers.fetch(url)
+    _resp, body = helpers.fetch(url)
     assert len(body.splitlines()) > 900
 
 
