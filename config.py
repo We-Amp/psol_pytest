@@ -6,15 +6,14 @@ import pytest
 
 ############################### test args      ################################
 TEST_TMP_DIR = "/home/oschaaf/Code/google/ngxps-ttpr/ngx_pagespeed/test/tmp"
-EXAMPLE_ROOT = "/mod_pagespeed_example"
-TEST_ROOT = "/mod_pagespeed_test"
-
 PRIMARY_SERVER = "http://localhost:8050"
 SECONDARY_SERVER = "http://localhost:8051"
 
+
+EXAMPLE_ROOT = "/mod_pagespeed_example"
+TEST_ROOT = "/mod_pagespeed_test"
 DEFAULT_USER_AGENT = ("Mozilla/5.0 (X11; U; Linux x86_64; en-US) "
     "AppleWebKit/534.0 (KHTML, like Gecko) Chrome/6.0.408.1 Safari/534.0")
-
 # TODO(oschaaf): check
 HTTPS_HOST = ""  # SECONDARY_HOST
 HTTPS_EXAMPLE_ROOT = "http://%s/mod_pagespeed_example" % HTTPS_HOST

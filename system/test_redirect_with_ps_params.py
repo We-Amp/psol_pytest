@@ -1,3 +1,5 @@
+import pytest
+
 import config
 import test_helpers as helpers
 
@@ -6,6 +8,7 @@ import test_helpers as helpers
 # so if the QPs are retained we should get the former but not the latter.
 proxy = config.SECONDARY_SERVER
 
+@pytest.mark.skipif("not proxy")
 def test_redirecting_to_the_same_domain_retains_pagespeed_query_parameters():
     url  = "http://redirect.example.com/mod_pagespeed_test/forbidden.html"
     opts =  "?PageSpeedFilters=-add_instrumentation"

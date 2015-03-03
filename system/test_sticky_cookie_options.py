@@ -3,11 +3,10 @@ import pytest
 import config
 import test_helpers as helpers
 
-skip = "not config.SECONDARY_SERVER"
 # TODO(oschaaf): original tests use generate_url() call!
 proxy = config.SECONDARY_SERVER
 
-@pytest.mark.skipif(skip)
+@pytest.mark.skipif("not proxy")
 class TestStickyOptionCookies:
     # Sticky option cookies: initially remove_comments only
     def test_initially_remove_comments_only(self):

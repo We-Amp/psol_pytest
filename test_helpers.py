@@ -95,7 +95,7 @@ def fetch(
         raise
     body = resp.data
 
-    log.debug("[%d]: fetch_url %s %s\n>>>>>>>>>>\n%s<<<<<<<<<<<<<" %
+    log.debug("[%d]: fetch_url %s %s\n%s" %
         (mycount, resp.status, resp.getheaders(), body))
 
     if not allow_error_responses:
